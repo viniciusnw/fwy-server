@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   workflow_dispatch:
 
 jobs:
@@ -15,24 +15,13 @@ jobs:
         with:
           host: ${{ secrets.SSH_HOST }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          # script: |
-          #   docker stop memcached node
-          #   docker rm memcached node
-          #   rm -rf server
-          #   ssh-keyscan -H bitbucket.org >> ~/.ssh/known_hosts
-          #   git clone git@bitbucket.org:viniciusnw/server.git
-          #   cd server/
-          #   docker-compose up --build
-          #   exit $?
-          #   EOF
-          #   echo "Deploy Finished \O"
+          username: ${{ secrets.USERNAME }}
           script: |
             docker stop memcached node
             docker rm memcached node
-            rm -rf server
-            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-            git clone git@github.com:viniciusnw/fwy-server.git server
+            mkdir server
             cd server/
+            git pull origin master
             exit $?
             EOF
             echo "Deploy Finished \O"
