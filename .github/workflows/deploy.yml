@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: executing remote ssh commands using ssh key
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          # script: |
+          #   docker stop memcached node
+          #   docker rm memcached node
+          #   rm -rf server
+          #   ssh-keyscan -H bitbucket.org >> ~/.ssh/known_hosts
+          #   git clone git@bitbucket.org:viniciusnw/server.git
+          #   cd server/
+          #   docker-compose up --build
+          #   exit $?
+          #   EOF
+          #   echo "Deploy Finished \O"
+          script: |
+            docker stop memcached node
+            docker rm memcached node
+            rm -rf server
+            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+            git clone git@github.com:viniciusnw/fwy-server.git server
+            cd server/
+            exit $?
+            EOF
+            echo "Deploy Finished \O"

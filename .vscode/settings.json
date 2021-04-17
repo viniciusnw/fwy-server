@@ -1,0 +1,10 @@
+{
+  "typescript.tsdk": "./native/node_modules/typescript/lib",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "yaml.schemas": {
+    "https://json.schemastore.org/github-workflow": "*",
+  },
+  "yaml.schemaStore.enable": false
+}

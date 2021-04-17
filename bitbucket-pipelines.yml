@@ -1,0 +1,22 @@
+image: ubuntu:16.04
+
+pipelines:
+  branches:
+    master:
+      - step:
+          name: "Deployment to Production"
+          deployment: production
+          script:
+            - apt-get update
+            - apt-get install -y unzip openssh-client
+            - ssh -tt $SSH_HOST << EOF
+            - docker stop memcached node
+            - docker rm memcached node
+            - rm -rf server
+            - ssh-keyscan -H bitbucket.org >> ~/.ssh/known_hosts
+            - git clone git@bitbucket.org:viniciusnw/server.git
+            - cd server/
+            - docker-compose up --build
+            - exit $?
+            - EOF
+            - echo "Deploy Finished \O"

@@ -1,0 +1,53 @@
+version: "3"
+
+services:
+  mongo:
+    container_name: mongo
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+      - "28017:28017"
+    command: mongod --storageEngine wiredTiger --auth
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root
+      - MONGO_INITDB_DATABASE=fasting
+    restart: always
+    volumes:
+      - ./MongoDB:/data/db
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    networks:
+      - server-network
+
+  memcached:
+    container_name: memcached
+    image: tutum/memcached
+    ports:
+      - "11211:11211"
+    environment:
+      - MEMCACHED_PASS=admin
+    networks:
+      - server-network
+
+  node:
+    container_name: node
+    build: ./
+    env_file: .env.dev
+    ports:
+      - "4000:4000"
+      - "4001:4001"
+      - "56745:56745"
+    volumes:
+      - ./:/app
+    links:
+      - mongo
+      - memcached
+    networks:
+      - server-network
+    command: yarn
+    command: yarn start
+    # command: yarn && yarn start
+
+networks: 
+  server-network:
+    driver: bridge

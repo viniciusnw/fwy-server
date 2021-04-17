@@ -1,0 +1,6 @@
+mutation Login($login: login!, $password: String!) {
+  login(login: $login, password: $password) {
+    token
+    expirationTime
+  }
+}
