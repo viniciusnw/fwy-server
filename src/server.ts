@@ -26,7 +26,7 @@ export default class Server implements RunnerType {
   public async configure() {
     await this.configureEnvValues();
     await this.configureWS();
-    await this.configureDB();
+    // await this.configureDB();
     await this.configureCache();
     await this.configureExpress();
     await this.configureGraphQL();
