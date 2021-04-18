@@ -46,7 +46,6 @@ services:
       - server-network
     command: yarn
     command: yarn start
-    # command: yarn && yarn start
 
 networks: 
   server-network:

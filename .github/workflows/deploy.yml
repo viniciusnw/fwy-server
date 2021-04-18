@@ -10,41 +10,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      # - name: Remote SSH Commands
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{ secrets.SSH_HOST }}
-      #     username: ${{ secrets.SSH_USER }}
-      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
-      #     script: |
-      #       docker stop memcached node
-      #       docker rm memcached node
-      #       rm -rf server
-      #       rm -rf ~/.ssh/known_hosts
-      #       ssh-keyscan -H bitbucket.org >> ~/.ssh/known_hosts
-      #       git clone git@bitbucket.org:viniciusnw/server.git
-      #       cd server/
-      #       docker-compose up --build
-      #       git pull origin master
-      #       exit $?
-      #       EOF
-      #       echo "Deploy Finished \O"
+        with:
+          repository: master
+          path: './server'
       - name: Remote SSH Commands
         uses: fifsky/ssh-action@master
         with:
           command: |
             docker stop memcached node
             docker rm memcached node
-            rm -rf server
-            rm -rf ~/.ssh/known_hosts
-            ssh-keyscan -H bitbucket.org >> ~/.ssh/known_hosts
-            git clone git@bitbucket.org:viniciusnw/server.git
             cd server/
-            docker-compose up --build
             git pull origin master
             exit $?
             EOF
-            echo "Deploy Finished \O"
           host: ${{ secrets.SSH_HOST }}
           user: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
