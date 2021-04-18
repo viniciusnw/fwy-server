@@ -1,4 +1,4 @@
-name: CI
+name: Deployment to Production
 
 on:
   push:
@@ -19,8 +19,11 @@ jobs:
           script: |
             docker stop memcached node
             docker rm memcached node
-            mkdir server
+            rm -rf server
+            ssh-keyscan -H bitbucket.org >> ~/.ssh/known_hosts
+            git clone git@bitbucket.org:viniciusnw/server.git
             cd server/
+            docker-compose up --build
             git pull origin master
             exit $?
             EOF
