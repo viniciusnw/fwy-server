@@ -44,8 +44,8 @@ services:
       - memcached
     networks:
       - server-network
-    command: yarn
     command: yarn start
+
 
 networks: 
   server-network:

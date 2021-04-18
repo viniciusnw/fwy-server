@@ -20,6 +20,7 @@ jobs:
             ssh-keyscan -H github.com >> ~/.ssh/known_hosts
             git clone git@github.com:viniciusnw/fwy-server.git server
             cd server/
+            yarn
             docker-compose up --build
             exit $?
             EOF

@@ -14,3 +14,4 @@ COPY . ./app
 # Expose door
 EXPOSE 4000
 EXPOSE 4001
+EXPOSE 56745
