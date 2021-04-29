@@ -1,16 +1,20 @@
-import { Service } from 'typedi';
-import { JwtService, encrypt, decrypt } from 'core/services';
-import { CustomerEntity } from 'data/datasource/mongo/models'
+import { Service } from "typedi";
+import { JwtService, encrypt, decrypt } from "core/services";
+import { CustomerEntity } from "data/datasource/mongo/models";
 
 @Service()
 export class AuthRepository {
+  constructor(private jwtService: JwtService) {}
 
-  constructor(
-    private jwtService: JwtService,
-  ) { }
-
-  public createCustomerToken(client: CustomerEntity, retoken: string): string {
-    const payload = { client: client, retoken, role: 'Customer' };
+  public createCustomerToken(
+    customer: CustomerEntity,
+    retoken: string
+  ): string {
+    const client = {
+      ...customer,
+    };
+    delete client.avatar;
+    const payload = { client, retoken, role: "Customer" };
     const token = this.jwtService.sign(payload, true);
     return token;
   }

@@ -1,4 +1,14 @@
-import { Field, InputType } from 'type-graphql';
+import { Field, InputType, ObjectType } from 'type-graphql';
+
+@InputType()
+class AvatarInput {
+  
+  @Field()
+  type: string;
+
+  @Field()
+  data: string;
+}
 
 @InputType()
 export class CustomerRegisterInput {
@@ -33,6 +43,6 @@ export class CustomerRegisterInput {
   @Field({ nullable: true })
   height: number;
 
-  @Field({ nullable: true })
-  avatar: string;
+  @Field(type => AvatarInput, { nullable: true })
+  avatar?: AvatarInput;
 }

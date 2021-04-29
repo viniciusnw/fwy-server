@@ -1,5 +1,14 @@
 import { Field, ObjectType, Int } from 'type-graphql';
 
+@ObjectType()
+export class Avatar {
+  
+  @Field()
+  type: string;
+
+  @Field()
+  data: string;
+}
 
 @ObjectType()
 export class Customer {
@@ -34,6 +43,6 @@ export class Customer {
   @Field({ nullable: true })
   height: number;
 
-  @Field({ nullable: true })
-  avatar: string;
+  @Field(type => Avatar, { nullable: true })
+  avatar?: Avatar;
 }

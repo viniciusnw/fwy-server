@@ -1,6 +1,16 @@
 import { Field, InputType } from 'type-graphql';
 
 @InputType()
+class AvatarUpdate {
+  
+  @Field()
+  type: string;
+
+  @Field()
+  data: string;
+}
+
+@InputType()
 export class CustomerUpdateInput {
 
   @Field({ nullable: true })
@@ -33,6 +43,6 @@ export class CustomerUpdateInput {
   @Field({ nullable: true })
   password: string;
 
-  @Field({ nullable: true })
-  avatar: string;
+  @Field(type => AvatarUpdate, { nullable: true })
+  avatar?: AvatarUpdate;
 }

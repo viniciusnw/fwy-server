@@ -1,6 +1,11 @@
-import { RequiredString, OptionalNumber, OptionalString } from 'core/types';
+import { RequiredString, OptionalNumber, OptionalString, OptionalBuffer } from 'core/types';
 import { Document, model, Schema } from 'mongoose';
 
+
+export interface AvatarEntity {
+  type: string,
+  data: Buffer 
+}
 export interface CustomerEntity extends Document {
   name: string;
   email: string;
@@ -12,7 +17,7 @@ export interface CustomerEntity extends Document {
   weight?: number;
   height?: number;
   password: string;
-  avatar?: string;
+  avatar?: AvatarEntity;
 }
 
 export const CustomerMongoModel = model<CustomerEntity>('Customer', new Schema({
@@ -26,5 +31,8 @@ export const CustomerMongoModel = model<CustomerEntity>('Customer', new Schema({
   weight: OptionalNumber,
   height: OptionalNumber,
   password: RequiredString,
-  avatar: OptionalString
+  avatar: {
+    type: OptionalString,
+    data: OptionalBuffer
+  }
 }));
