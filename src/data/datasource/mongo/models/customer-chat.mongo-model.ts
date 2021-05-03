@@ -1,18 +1,18 @@
-import { RequiredString } from 'core/types';
+import { RequiredString, RequiredDate } from 'core/types';
 import { Document, model, Schema, models } from 'mongoose';
 
-export interface CustomerChatEntity extends Document {
+export interface CustomerMessageEntity extends Document {
   sender: string;
   text: string;
-  date: string;
+  date: Date;
 }
 
 export const CustomerChatMongoModel = (customerId: string) => {
   const DocumentName = `CustomerChat_${customerId}`;
   return models[DocumentName] ||
-    model<CustomerChatEntity>(DocumentName, new Schema({
+    model<CustomerMessageEntity>(DocumentName, new Schema({
       sender: RequiredString,
       text: RequiredString,
-      date: RequiredString,
+      date: RequiredDate,
     }));
 }

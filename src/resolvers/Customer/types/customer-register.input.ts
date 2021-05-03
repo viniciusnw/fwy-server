@@ -1,4 +1,4 @@
-import { Field, InputType, ObjectType } from 'type-graphql';
+import { Field, InputType } from 'type-graphql';
 
 @InputType()
 class AvatarInput {
@@ -22,8 +22,8 @@ export class CustomerRegisterInput {
   @Field()
   phone: string;
 
-  @Field()
-  birthday: string;
+  @Field(type => Date)
+  birthday: Date;
 
   @Field()
   country: string;

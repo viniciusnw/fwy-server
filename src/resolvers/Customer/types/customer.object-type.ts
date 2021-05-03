@@ -25,8 +25,8 @@ export class Customer {
   @Field()
   phone: string;
 
-  @Field()
-  birthday: string;
+  @Field(type => Date)
+  birthday: Date;
 
   @Field()
   country: string;

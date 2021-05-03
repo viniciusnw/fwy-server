@@ -22,8 +22,8 @@ export class CustomerUpdateInput {
   @Field({ nullable: true })
   phone: string;
 
-  @Field({ nullable: true })
-  birthday: string;
+  @Field(type => Date, { nullable: true })
+  birthday: Date;
 
   @Field({ nullable: true })
   gender: string;

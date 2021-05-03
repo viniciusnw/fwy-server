@@ -5,7 +5,10 @@ import { AuthenticationGraphQLMiddleware, TokenGraphQLMiddleware } from 'core/mi
 // REPOS
 import { ChatRepository } from 'data/repositories'
 // INPUT TYPES
+import { Pagination } from 'resolvers/General/types/pagination.input'
 // OUTPUT TYPES
+import { NextPagination } from 'resolvers/General/types/next-pagination.input'
+import { GetChatMessages } from './types/customer-login.object-type'
 
 @Resolver()
 export class GeneralGraphQLResolver {
@@ -16,12 +19,36 @@ export class GeneralGraphQLResolver {
 
   @UseMiddleware(AuthenticationGraphQLMiddleware, TokenGraphQLMiddleware)
   @Mutation(returns => Boolean)
-  async sendChatMenssage(
+  async sendChatMessage(
     @Ctx() context: GraphQLContext,
     @Arg('text') text: string,
-    @Arg('sender') sender: string,
-    @Arg('customerId') customerId: string,
+    @Arg('customerId', { nullable: true }) customerId: string,
   ): Promise<boolean> {
-    return await this.ChatRepository.sendMessage(customerId, text, sender)
+    const { _id } = context.token.client;
+    const senders = ['self', 'adm'];
+    const sender = senders[customerId ? 1 : 0];
+    return await this.ChatRepository.sendMessage(customerId || _id, text, sender);
+  }
+
+  @UseMiddleware(AuthenticationGraphQLMiddleware, TokenGraphQLMiddleware)
+  @Query(returns => GetChatMessages)
+  async getChatMessages(
+    @Ctx() context: GraphQLContext,
+    @Arg('pagination') pagination: Pagination,
+  ): Promise<GetChatMessages> {
+    const { _id: customerId } = context.token.client;
+    const messages = await this.ChatRepository.getMessagesByCustomerId(customerId, pagination);
+    const hasNextPage = messages.length == pagination.nPerPage;
+    const nextPagination = {
+      ...pagination,
+      nextPageNumber: hasNextPage ? pagination.pageNumber + 1 : null
+    } as NextPagination;
+
+    const response = {
+      messages,
+      nextPagination
+    };
+
+    return response;
   }
 }

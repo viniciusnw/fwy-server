@@ -1,4 +1,4 @@
-import { RequiredString, OptionalNumber, OptionalString, OptionalBuffer } from 'core/types';
+import { RequiredString, OptionalNumber, OptionalString, OptionalBuffer, RequiredDate } from 'core/types';
 import { Document, model, Schema } from 'mongoose';
 
 
@@ -10,7 +10,7 @@ export interface CustomerEntity extends Document {
   name: string;
   email: string;
   phone: string;
-  birthday: string;
+  birthday: Date;
   gender?: string;
   country: string;
   state: string;
@@ -24,7 +24,7 @@ export const CustomerMongoModel = model<CustomerEntity>('Customer', new Schema({
   name: RequiredString,
   email: RequiredString,
   phone: RequiredString,
-  birthday: RequiredString,
+  birthday: RequiredDate,
   gender: OptionalString,
   country: RequiredString,
   state: RequiredString,

@@ -17,14 +17,10 @@ type CreateLoginModel = {
 export class CustomerRepository {
   constructor(
     private CustomerDBDataSource: MongoDataSource.CustomerDBDataSource
-  ) {}
+  ) { }
 
-  public async create(
-    customerInput: CustomerRegisterInput
-  ): Promise<CustomerEntity> {
-    const customer = await this.CustomerDBDataSource.getByEmail(
-      customerInput.email
-    );
+  public async create(customerInput: CustomerRegisterInput): Promise<CustomerEntity> {
+    const customer = await this.CustomerDBDataSource.getByEmail(customerInput.email);
     if (customer) throw Error("e-mail already exists");
     customerInput.password = encrypt(customerInput.password);
     const avatar = this.createAvatarBufferEntity(customerInput);
@@ -36,18 +32,12 @@ export class CustomerRepository {
   }
 
   public async login(email: string, password: string): Promise<CustomerEntity> {
-    const customer = await this.CustomerDBDataSource.getByEmailAndPass(
-      email,
-      encrypt(password)
-    );
+    const customer = await this.CustomerDBDataSource.getByEmailAndPass(email, encrypt(password));
     if (!customer) throw Error("Invalid email or password");
     return customer.toObject();
   }
 
-  public async update(
-    id: string,
-    customerInput: CustomerUpdateInput
-  ): Promise<CustomerEntity> {
+  public async update(id: string, customerInput: CustomerUpdateInput): Promise<CustomerEntity> {
     const avatar = this.createAvatarBufferEntity(customerInput);
     const update = await this.CustomerDBDataSource.updateById(id, {
       ...customerInput,
@@ -58,14 +48,12 @@ export class CustomerRepository {
     const customer = await this.CustomerDBDataSource.getById(id);
     return { ...customer } as CustomerEntity;
   }
-  
+
   public createLoginModel(customer: CustomerEntity): CreateLoginModel {
     return { email: customer.email, password: decrypt(customer.password) };
   }
 
-  private createAvatarBufferEntity(
-    customerInput: CustomerRegisterInput
-  ): AvatarEntity {
+  private createAvatarBufferEntity(customerInput: CustomerRegisterInput): AvatarEntity {
     let avatar = null;
     if (customerInput.avatar) {
       avatar = {
