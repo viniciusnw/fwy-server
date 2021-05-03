@@ -45,7 +45,7 @@ export class GeneralGraphQLResolver {
     } as NextPagination;
 
     const response = {
-      messages,
+      messages: messages.reverse(),
       nextPagination
     };
 
