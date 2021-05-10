@@ -25,7 +25,7 @@ export class GeneralGraphQLResolver {
     @Arg('customerId', { nullable: true }) customerId: string,
   ): Promise<boolean> {
     const { _id } = context.token.client;
-    const senders = ['self', 'adm'];
+    const senders = ['customer', 'adm'];
     const sender = senders[customerId ? 1 : 0];
     return await this.ChatRepository.sendMessage(customerId || _id, text, sender);
   }

@@ -4,6 +4,9 @@ import { NextPagination } from 'resolvers/General/types/next-pagination.input'
 @ObjectType()
 class Message {
 
+  @Field({ nullable: true })
+  _id: string;
+
   @Field()
   text: string;
 
