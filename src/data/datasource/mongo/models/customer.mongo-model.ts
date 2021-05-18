@@ -1,5 +1,5 @@
-import { RequiredString, OptionalNumber, OptionalString, OptionalBuffer, RequiredDate } from 'core/types';
 import { Document, model, Schema } from 'mongoose';
+import { RequiredString, OptionalNumber, OptionalString, OptionalBuffer, RequiredDate } from 'core/types';
 
 
 export interface AvatarEntity {

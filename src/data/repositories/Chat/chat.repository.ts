@@ -14,12 +14,12 @@ export class ChatRepository {
     private WSService: WSService
   ) { }
 
-  private loadCustomer(customerId: string){
+  private LoadCustomerChatDB(customerId: string){
     this.CustomerChatDBDataSource = new MongoDataSource.CustomerChatDBDataSource(customerId);
   }
 
   public async sendMessage(customerId: string, text: string, sender: string): Promise<any> {
-    this.loadCustomer(customerId);
+    this.LoadCustomerChatDB(customerId);
     const message = { sender, text, date: new Date() };
     const saveMessage = await this.CustomerChatDBDataSource.create(message as CustomerMessageEntity);
     if (saveMessage && !saveMessage.errors) {
@@ -31,7 +31,7 @@ export class ChatRepository {
   }
 
   public async getMessagesByCustomerId(customerId: string, pagination: Pagination): Promise<CustomerMessageEntity[]> {
-    this.loadCustomer(customerId);
+    this.LoadCustomerChatDB(customerId);
     const { pageNumber, nPerPage } = pagination;
     return await this.CustomerChatDBDataSource.listPaginated(pageNumber, nPerPage);
   }
