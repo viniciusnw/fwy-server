@@ -44,7 +44,7 @@ export class CustomerRepository {
       avatar,
     } as CustomerEntity);
     const { ok } = update;
-    if (!ok) throw Error("Update Error");
+    if (!ok) throw Error("Update Customer Error");
     const customer = await this.CustomerDBDataSource.getById(id);
     return { ...customer } as CustomerEntity;
   }

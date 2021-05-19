@@ -11,4 +11,12 @@ export class CustomerFastingsDBDataSource extends DBDataSource<CustomerFastEntit
   constructor(customerId) {
     super(CustomerFastingsMongoModel(customerId));
   }
+
+  @ThrowsWhenUncaughtException(DataSourceError)
+  async getActives(): Promise<CustomerFastEntity[]> {
+    return await this.model.find({
+      endDate: { $gte: new Date().toISOString() },
+      finished: { $eq: false }
+    }).sort({ _id: -1 }).exec()
+  }
 }

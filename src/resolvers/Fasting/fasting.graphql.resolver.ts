@@ -26,15 +26,29 @@ export class FastingGraphQLResolver {
   }
 
   @UseMiddleware(AuthenticationGraphQLMiddleware, TokenGraphQLMiddleware)
+  @Mutation(returns => String)
+  async endFasting(
+    @Ctx() context: GraphQLContext,
+    @Arg('fastingId') fastingId: string,
+  ): Promise<boolean> {
+    return await this.FastingsRepository.endById(context.token.client._id, fastingId)
+  }
+
+  @UseMiddleware(AuthenticationGraphQLMiddleware, TokenGraphQLMiddleware)
   @Query(returns => [Fasting])
   async getFasts(
     @Ctx() context: GraphQLContext,
-    @Arg('actives') actives: boolean,
+    @Arg('actives', { nullable: true }) actives: boolean,
     @Arg('fastingId', { nullable: true }) fastingId: string,
   ): Promise<Fasting[]> {
+    const { _id } = context.token.client
+
+    if (actives)
+      return await this.FastingsRepository.getActives(_id)
+
     if (fastingId)
       return [
-        await this.FastingsRepository.getById(context.token.client._id, fastingId)
+        await this.FastingsRepository.getById(_id, fastingId)
       ]
 
     return []
