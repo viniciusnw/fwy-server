@@ -22,4 +22,10 @@ export class FastingsRepository {
     const fasting = await this.CustomerFastingsDBDataSource.create(fastingInput as CustomerFastEntity)
     return fasting.toObject()._id
   }
+
+  public async getById(customerId: string, fastingId: string): Promise<CustomerFastEntity> {
+    this.LoadFastingsDB(customerId);
+    const fasting = await this.CustomerFastingsDBDataSource.get(fastingId)
+    return fasting.toObject()
+  }
 }

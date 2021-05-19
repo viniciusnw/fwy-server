@@ -1,6 +1,6 @@
 
 import { Document, model, Schema, models } from 'mongoose';
-import { RequiredString, RequiredDate, OptionalString, RequiredNumber } from 'core/types';
+import { RequiredString, RequiredDate, OptionalString, RequiredNumber, RequiredBoolean } from 'core/types';
 
 export interface CustomerFastEntity extends Document {
   name: string
@@ -8,6 +8,7 @@ export interface CustomerFastEntity extends Document {
   endDate: Date
   color: string
   index: number
+  finished: boolean
 }
 
 export const CustomerFastingsMongoModel = (customerId: string) => {
@@ -18,6 +19,7 @@ export const CustomerFastingsMongoModel = (customerId: string) => {
       startDate: RequiredDate,
       endDate: RequiredDate,
       color: OptionalString,
-      index: RequiredNumber
+      index: RequiredNumber,
+      finished: RequiredBoolean
     }));
 }

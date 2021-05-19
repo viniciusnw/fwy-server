@@ -1,7 +1,7 @@
-import { InputType, Field } from 'type-graphql';
+import { Field, ObjectType } from 'type-graphql';
 
-@InputType()
-export class FastingInput {
+@ObjectType()
+export class Fasting {
 
   @Field()
   name: string

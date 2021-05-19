@@ -7,7 +7,7 @@ import { FastingsRepository } from 'data/repositories'
 // INPUT TYPES
 import { FastingInput } from './types/fasting.input';
 // OUTPUT TYPES
-
+import { Fasting } from './types/fasting.object-type';
 
 @Resolver()
 export class FastingGraphQLResolver {
@@ -26,12 +26,17 @@ export class FastingGraphQLResolver {
   }
 
   @UseMiddleware(AuthenticationGraphQLMiddleware, TokenGraphQLMiddleware)
-  @Query(returns => String)
+  @Query(returns => [Fasting])
   async getFasts(
     @Ctx() context: GraphQLContext,
     @Arg('actives') actives: boolean,
-    @Arg('fastingId') fastingId: string,
-  ): Promise<string> {
-    return ''
+    @Arg('fastingId', { nullable: true }) fastingId: string,
+  ): Promise<Fasting[]> {
+    if (fastingId)
+      return [
+        await this.FastingsRepository.getById(context.token.client._id, fastingId)
+      ]
+
+    return []
   }
 }
