@@ -15,9 +15,6 @@ export class FastingInput {
   @Field()
   color: string
 
-  @Field()
-  index: number
-
-  @Field()
-  finished: boolean
+  @Field({ nullable: true })
+  finished: Date
 }

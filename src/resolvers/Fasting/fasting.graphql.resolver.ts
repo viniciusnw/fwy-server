@@ -6,8 +6,10 @@ import { AuthenticationGraphQLMiddleware, TokenGraphQLMiddleware } from 'core/mi
 import { FastingsRepository } from 'data/repositories'
 // INPUT TYPES
 import { FastingInput } from './types/fasting.input';
+import { PresetInput } from './types/preset.input';
 // OUTPUT TYPES
 import { Fasting } from './types/fasting.object-type';
+import { Preset } from './types/preset.object-type';
 
 @Resolver()
 export class FastingGraphQLResolver {
@@ -26,12 +28,22 @@ export class FastingGraphQLResolver {
   }
 
   @UseMiddleware(AuthenticationGraphQLMiddleware, TokenGraphQLMiddleware)
-  @Mutation(returns => String)
+  @Mutation(returns => Boolean)
+  async editFasting(
+    @Ctx() context: GraphQLContext,
+    @Arg('fasting') fastingInput: FastingInput,
+  ): Promise<boolean> {
+    return true
+  }
+
+  @UseMiddleware(AuthenticationGraphQLMiddleware, TokenGraphQLMiddleware)
+  @Mutation(returns => Boolean)
   async endFasting(
     @Ctx() context: GraphQLContext,
+    @Arg('save') save: boolean,
     @Arg('fastingId') fastingId: string,
   ): Promise<boolean> {
-    return await this.FastingsRepository.endById(context.token.client._id, fastingId)
+    return await this.FastingsRepository.endSaveById(context.token.client._id, fastingId, save)
   }
 
   @UseMiddleware(AuthenticationGraphQLMiddleware, TokenGraphQLMiddleware)
@@ -50,7 +62,25 @@ export class FastingGraphQLResolver {
       return [
         await this.FastingsRepository.getById(_id, fastingId)
       ]
-
     return []
+  }
+
+  @UseMiddleware(AuthenticationGraphQLMiddleware, TokenGraphQLMiddleware)
+  @Mutation(returns => Boolean)
+  async createPreset(
+    @Ctx() context: GraphQLContext,
+    @Arg('preset') presetInput: PresetInput,
+  ): Promise<boolean> {
+    const { _id } = context.token.client
+    return await this.FastingsRepository.savePreset(_id, presetInput)
+  }
+
+  @UseMiddleware(AuthenticationGraphQLMiddleware, TokenGraphQLMiddleware)
+  @Query(returns => [Preset])
+  async getPresets(
+    @Ctx() context: GraphQLContext,
+  ): Promise<Preset[]> {
+    const { _id } = context.token.client
+    return await this.FastingsRepository.getPresets(_id)
   }
 }

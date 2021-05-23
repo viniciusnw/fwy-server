@@ -16,7 +16,7 @@ export class CustomerFastingsDBDataSource extends DBDataSource<CustomerFastEntit
   async getActives(): Promise<CustomerFastEntity[]> {
     return await this.model.find({
       endDate: { $gt: new Date().toISOString() },
-      finished: { $eq: false }
+      finished: { $eq: null }
     }).sort({ _id: -1 }).exec()
   }
 }

@@ -1,14 +1,13 @@
 
 import { Document, model, Schema, models } from 'mongoose';
-import { RequiredString, RequiredDate, OptionalString, RequiredNumber, RequiredBoolean } from 'core/types';
+import { RequiredString, RequiredDate, OptionalString, RequiredNumber, OptionalDate } from 'core/types';
 
 export interface CustomerFastEntity extends Document {
   name: string
   startDate: Date
   endDate: Date
   color: string
-  index: number
-  finished: boolean
+  finished: Date | null
 }
 
 export const CustomerFastingsMongoModel = (customerId: string) => {
@@ -19,7 +18,6 @@ export const CustomerFastingsMongoModel = (customerId: string) => {
       startDate: RequiredDate,
       endDate: RequiredDate,
       color: OptionalString,
-      index: RequiredNumber,
-      finished: RequiredBoolean
+      finished: OptionalDate
     }));
 }

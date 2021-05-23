@@ -1,7 +1,7 @@
 import { Field, ObjectType } from 'type-graphql';
 
 @ObjectType()
-export class Fasting {
+export class Preset {
 
   @Field()
   _id: string
@@ -9,15 +9,15 @@ export class Fasting {
   @Field()
   name: string
 
-  @Field(type => Date)
-  startDate: Date
+  @Field()
+  days: number
 
-  @Field(type => Date)
-  endDate: Date
+  @Field()
+  hours: number
 
   @Field()
   color: string
 
-  @Field({ nullable: true })
-  finished?: Date
+  @Field()
+  index: number
 }
