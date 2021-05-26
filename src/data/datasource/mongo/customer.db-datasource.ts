@@ -6,8 +6,6 @@ import { ThrowsWhenUncaughtException } from 'core/middlewares'
 import { DBDataSource } from './db-datasource';
 import { CustomerEntity, CustomerMongoModel } from './models';
 
-import { CustomerUpdateInput } from 'resolvers/Customer/types/customer-update.input'
-
 @Service()
 export class CustomerDBDataSource extends DBDataSource<CustomerEntity> {
   constructor() {
@@ -30,7 +28,7 @@ export class CustomerDBDataSource extends DBDataSource<CustomerEntity> {
   }
 
   @ThrowsWhenUncaughtException(DataSourceError)
-  async updateById(id: string, customerInput: CustomerUpdateInput): Promise<any> {
+  async updateById(id: string, customerInput: CustomerEntity): Promise<any> {
     return await this.update(id, { ...customerInput } as CustomerEntity);
   }
 }

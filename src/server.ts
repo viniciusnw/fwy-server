@@ -5,9 +5,8 @@ import * as compression from 'compression';
 
 import { Container } from 'typedi';
 import { buildSchema } from 'type-graphql';
-import bodyParser = require('body-parser');
-import { ApolloServer } from 'apollo-server-express';
 import { useExpressServer } from 'routing-controllers';
+import { ApolloServer, GraphQLUpload } from 'apollo-server-express';
 
 import { RunnerType } from 'core/types'
 import { ENV_NAMES } from 'core/constants';
@@ -26,7 +25,7 @@ export default class Server implements RunnerType {
   public async configure() {
     await this.configureEnvValues();
     await this.configureWS();
-    // await this.configureDB();
+    await this.configureDB();
     await this.configureCache();
     await this.configureExpress();
     await this.configureGraphQL();
@@ -106,7 +105,7 @@ export default class Server implements RunnerType {
     let server = express();
     server.use(cors());
     server.use(compression());
-    server.use(bodyParser.json({ limit: '50mb' }));
+    server.use(express.json({ limit: '500mb' }));
     server.disable('x-powered-by');
     useExpressServer(server, {
       defaultErrorHandler: false,

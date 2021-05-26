@@ -8,7 +8,7 @@
   "watch": [
     "src/",
     ".env.dev",
-    ".env.prod"
+    ".env"
   ],
   "ext": "ts json"
 }

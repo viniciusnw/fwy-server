@@ -37,10 +37,11 @@ export abstract class DBDataSource<Entity extends Document> {
   }
 
   @ThrowsWhenUncaughtException(DataSourceError)
-  async listPaginated(offset: number, limit: number, conditions?: Object, projection?: Object): Promise<[Entity[], number]> {
-    const count = await this.model.count(conditions).exec();
-    const items = await this.model.find(conditions, projection).skip(offset).limit(limit).lean().exec() as Entity[];
-    return [items, count];
+  listPaginated(pageNumber: number, nPerPage: number): Promise<Entity[]> {
+    return this.model.find()
+      .sort({ _id: -1 })
+      .skip(pageNumber > 0 ? ((pageNumber - 1) * nPerPage) : 0)
+      .limit(nPerPage).exec()
   }
 
   protected toObjectId(id: string): Types.ObjectId {

@@ -30,7 +30,9 @@ export class CustomerGraphQLResolver {
     const login = { email: customerInput.email, password: customerInput.password };
     const retoken = await this.AuthRepository.createReToken(login);
     const token = await this.AuthRepository.createCustomerToken(createdCustomer, retoken);
-    const Customer = createdCustomer as Customer
+
+    const avatar = this.CustomerRepository.createAvatarObjectType(createdCustomer)
+    const Customer = { ...createdCustomer, avatar } as Customer
 
     return {
       ...Customer,
@@ -49,7 +51,9 @@ export class CustomerGraphQLResolver {
     const customer = await this.CustomerRepository.login(email, password)
     const retoken = await this.AuthRepository.createReToken({ email, password });
     const token = await this.AuthRepository.createCustomerToken(customer, retoken);
-    const Customer = customer as Customer
+    
+    const avatar = this.CustomerRepository.createAvatarObjectType(customer)
+    const Customer = { ...customer, avatar } as Customer
 
     return {
       ...Customer,
@@ -61,17 +65,19 @@ export class CustomerGraphQLResolver {
 
   @UseMiddleware(AuthenticationGraphQLMiddleware, TokenGraphQLMiddleware)
   @Mutation(returns => CustomerUpdate)
-  async updateCustomer(
+  async customerUpdate(
     @Ctx() context: GraphQLContext,
     @Arg('customer') customerInput: CustomerUpdateInput,
   ): Promise<CustomerUpdate> {
 
     const { token: { client: { _id } } } = context
     const customer = await this.CustomerRepository.update(_id, customerInput)
-    const login = await this.CustomerRepository.createLoginModel(customer);
+    const login = this.CustomerRepository.createLoginModel(customer);
     const retoken = await this.AuthRepository.createReToken(login);
     const token = await this.AuthRepository.createCustomerToken(customer, retoken);
-    const Customer = customer as Customer
+    
+    const avatar = this.CustomerRepository.createAvatarObjectType(customer)
+    const Customer = { ...customer, avatar } as Customer
 
     return {
       ...Customer,

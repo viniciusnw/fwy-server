@@ -15,7 +15,7 @@ services:
     restart: always
     volumes:
       - ./MongoDB:/data/db
-      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
     networks:
       - server-network
 

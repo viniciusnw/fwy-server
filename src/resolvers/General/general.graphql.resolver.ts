@@ -19,8 +19,15 @@ export class GeneralGraphQLResolver {
     @Ctx() context: GraphQLContext,
     @Arg('country', { nullable: true }) country: string,
   ): Promise<String[]> {
-    
     if (country) return await this.GeneralRepository.states(country)
     return await this.GeneralRepository.countries()
+  }
+
+  @UseMiddleware(TokenGraphQLMiddleware)
+  @Mutation(returns => Boolean)
+  async addEmailInWhiteList(
+    @Arg('email') email: string,
+  ): Promise<boolean> {
+    return await this.GeneralRepository.addItemWhiteList(email)
   }
 }

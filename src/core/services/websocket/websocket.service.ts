@@ -23,7 +23,7 @@ export class WSService {
     this.updateWSClients();
     this.WSClients.filter(ws => ws._id == customerId).map(ws => {
       if (ws && ws.socket.readyState === WebSocket.OPEN)
-        ws.socket.send(JSON.stringify({ data }))
+        ws.socket.send(JSON.stringify(data))
     });
   }
 }
