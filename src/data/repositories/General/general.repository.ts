@@ -24,4 +24,10 @@ export class GeneralRepository {
     if (!emailAdded) throw Error("Error in add Email");
     return true
   }
+
+  public async emailInWhiteList(email: string): Promise<boolean> {
+    const inList = await this.WhiteListDBDataSource.getByEmail(email);
+    if (!inList) throw Error("Email not authorized");
+    return true
+  }
 }
