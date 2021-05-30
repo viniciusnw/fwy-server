@@ -13,10 +13,21 @@ export class CustomerFastingsDBDataSource extends DBDataSource<CustomerFastEntit
   }
 
   @ThrowsWhenUncaughtException(DataSourceError)
-  async getActives(): Promise<CustomerFastEntity[]> {
+  async getActives(findOne: boolean): Promise<CustomerFastEntity[]> {
+    if (findOne) return await this.model.find({
+      finished: { $eq: null },
+    }).sort({ _id: 1 }).limit(1).exec()
+
     return await this.model.find({
+      finished: { $eq: null },
+    }).sort({ _id: 1 }).exec()
+  }
+
+  @ThrowsWhenUncaughtException(DataSourceError)
+  async getActives_old(): Promise<CustomerFastEntity[]> {
+    return await this.model.find({
+      finished: { $eq: null },
       endDate: { $gt: new Date().toISOString() },
-      finished: { $eq: null }
-    }).sort({ _id: -1 }).exec()
+    }).sort({ _id: 1 }).exec()
   }
 }

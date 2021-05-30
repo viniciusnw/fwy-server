@@ -2,8 +2,9 @@ import { Service } from 'typedi';
 import { MongoDataSource } from 'data/datasource';
 import { CustomerFastEntity, CustomerPresetFastEntity } from "data/datasource/mongo/models";
 
-import { FastingInput } from "resolvers/Fasting/types/fasting.input";
 import { PresetInput } from "resolvers/Fasting/types/preset.input";
+import { FastingInput } from "resolvers/Fasting/types/fasting.input";
+import { FastingUpdateInput } from "resolvers/Fasting/types/fasting-update.input";
 
 @Service()
 export class FastingsRepository {
@@ -44,10 +45,9 @@ export class FastingsRepository {
     return fasting;
   }
 
-  public async getActives(customerId: string): Promise<CustomerFastEntity[]> {
+  public async getActives(customerId: string, findOne: boolean): Promise<CustomerFastEntity[]> {
     this.LoadFastingsDB(customerId);
-    const fasting = await this.CustomerFastingsDBDataSource.getActives();
-    return fasting;
+    return await this.CustomerFastingsDBDataSource.getActives(findOne);
   }
 
   public async endSaveById(customerId: string, fastingId: string, save: boolean): Promise<boolean> {
@@ -57,6 +57,14 @@ export class FastingsRepository {
       : await this.CustomerFastingsDBDataSource.delete(fastingId)
     const { ok } = fasting;
     if (!ok) throw Error("Finish Fasting Error");
+    return true
+  }
+
+  public async edit(customerId: string, fastingId: string, fastingInput: FastingUpdateInput): Promise<boolean> {
+    this.LoadFastingsDB(customerId);
+    const edit = await this.CustomerFastingsDBDataSource.update(fastingId, { ...fastingInput } as CustomerFastEntity)
+    const { ok } = edit
+    if (!ok) throw Error("Edit Fasting Error");
     return true
   }
 }

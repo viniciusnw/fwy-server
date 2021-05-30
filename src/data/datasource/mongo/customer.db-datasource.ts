@@ -21,7 +21,7 @@ export class CustomerDBDataSource extends DBDataSource<CustomerEntity> {
   async getByEmail(email: string): Promise<CustomerEntity> {
     return await this.model.findOne({ email })
       .collation({ locale: 'en', strength: 2 })
-      .sort({ _id: -1 }).limit(1).exec()
+      .limit(1).exec()
   }
 
   @ThrowsWhenUncaughtException(DataSourceError)
@@ -29,13 +29,12 @@ export class CustomerDBDataSource extends DBDataSource<CustomerEntity> {
 
     const customer = await this.model.findOne({ email })
       .collation({ locale: 'en', strength: 2 })
-      .sort({ _id: -1 }).limit(1).exec()
+      .limit(1).exec()
 
     const caseInsensitiveEmail = customer.email
     if (!caseInsensitiveEmail) throw Error("Invalid email or password");
 
-    return await this.model.findOne({ email: caseInsensitiveEmail, password }).sort({ _id: -1 }).limit(1).exec()
-
+    return await this.model.findOne({ email: caseInsensitiveEmail, password }).limit(1).exec()
   }
 
   @ThrowsWhenUncaughtException(DataSourceError)
