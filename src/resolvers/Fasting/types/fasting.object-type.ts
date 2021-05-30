@@ -18,6 +18,9 @@ export class Fasting {
   @Field()
   color: string
 
+  @Field()
+  initialTotalHours: number
+
   @Field({ nullable: true })
   finished?: Date
 }

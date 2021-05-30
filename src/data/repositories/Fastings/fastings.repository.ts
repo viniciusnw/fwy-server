@@ -35,7 +35,12 @@ export class FastingsRepository {
 
   public async create(customerId: string, fastingInput: FastingInput): Promise<string> {
     this.LoadFastingsDB(customerId);
-    const fasting = await this.CustomerFastingsDBDataSource.create(fastingInput as CustomerFastEntity)
+    const differenceInTime = new Date(fastingInput.endDate).getTime() - new Date(fastingInput.startDate).getTime();
+    const differenceInHours = differenceInTime / 1000 / 3600;
+    const fasting = await this.CustomerFastingsDBDataSource.create({
+      ...fastingInput,
+      initialTotalHours: differenceInHours
+    } as CustomerFastEntity)
     return fasting.toObject()._id
   }
 
