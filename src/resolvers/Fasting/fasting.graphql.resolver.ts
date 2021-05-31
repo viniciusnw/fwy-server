@@ -5,8 +5,9 @@ import { AuthenticationGraphQLMiddleware, TokenGraphQLMiddleware } from 'core/mi
 // REPOS
 import { FastingsRepository } from 'data/repositories'
 // INPUT TYPES
-import { FastingInput } from './types/fasting.input';
 import { PresetInput } from './types/preset.input';
+import { FastingInput } from './types/fasting.input';
+import { FastingUpdateInput } from './types/fasting-update.input';
 // OUTPUT TYPES
 import { Fasting } from './types/fasting.object-type';
 import { Preset } from './types/preset.object-type';
@@ -28,12 +29,23 @@ export class FastingGraphQLResolver {
   }
 
   @UseMiddleware(AuthenticationGraphQLMiddleware, TokenGraphQLMiddleware)
-  @Mutation(returns => Boolean)
+  @Mutation(returns => Fasting)
   async editFasting(
     @Ctx() context: GraphQLContext,
-    @Arg('fasting') fastingInput: FastingInput,
-  ): Promise<boolean> {
-    return true
+    @Arg('id') fastingId: string,
+    @Arg('fasting') fastingInput: FastingUpdateInput,
+  ): Promise<Fasting> {
+    return await this.FastingsRepository.edit(context.token.client._id, fastingId, fastingInput)
+  }
+
+  @UseMiddleware(AuthenticationGraphQLMiddleware, TokenGraphQLMiddleware)
+  @Mutation(returns => Fasting)
+  async editStartEndFasting(
+    @Ctx() context: GraphQLContext,
+    @Arg('id') fastingId: string,
+    @Arg('fasting') fastingInput: FastingUpdateInput,
+  ): Promise<Fasting> {
+    return await this.FastingsRepository.editStartEndDate(context.token.client._id, fastingId, fastingInput)
   }
 
   @UseMiddleware(AuthenticationGraphQLMiddleware, TokenGraphQLMiddleware)
@@ -56,7 +68,7 @@ export class FastingGraphQLResolver {
     const { _id } = context.token.client
 
     if (actives)
-      return await this.FastingsRepository.getActives(_id)
+      return await this.FastingsRepository.getActives(_id, true)
 
     if (fastingId)
       return [

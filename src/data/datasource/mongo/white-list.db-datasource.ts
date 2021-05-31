@@ -19,6 +19,6 @@ export class WhiteListDBDataSource extends DBDataSource<WhiteListItemEntity> {
         $eq: email
       }
     }).collation({ locale: 'en', strength: 2 })
-      .sort({ _id: -1 }).limit(1).exec()
+      .limit(1).exec()
   }
 }

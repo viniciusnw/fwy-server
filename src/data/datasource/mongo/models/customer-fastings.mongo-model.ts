@@ -4,10 +4,11 @@ import { RequiredString, RequiredDate, OptionalString, RequiredNumber, OptionalD
 
 export interface CustomerFastEntity extends Document {
   name: string
-  startDate: Date
   endDate: Date
   color: string
+  startDate: Date
   finished: Date | null
+  initialTotalHours: number
 }
 
 export const CustomerFastingsMongoModel = (customerId: string) => {
@@ -15,9 +16,10 @@ export const CustomerFastingsMongoModel = (customerId: string) => {
   return models[DocumentName] ||
     model<CustomerFastEntity>(DocumentName, new Schema({
       name: RequiredString,
-      startDate: RequiredDate,
       endDate: RequiredDate,
       color: OptionalString,
-      finished: OptionalDate
+      finished: OptionalDate,
+      startDate: RequiredDate,
+      initialTotalHours: RequiredNumber
     }));
 }
