@@ -29,13 +29,23 @@ export class FastingGraphQLResolver {
   }
 
   @UseMiddleware(AuthenticationGraphQLMiddleware, TokenGraphQLMiddleware)
-  @Mutation(returns => Boolean)
+  @Mutation(returns => Fasting)
   async editFasting(
     @Ctx() context: GraphQLContext,
     @Arg('id') fastingId: string,
     @Arg('fasting') fastingInput: FastingUpdateInput,
-  ): Promise<boolean> {
+  ): Promise<Fasting> {
     return await this.FastingsRepository.edit(context.token.client._id, fastingId, fastingInput)
+  }
+
+  @UseMiddleware(AuthenticationGraphQLMiddleware, TokenGraphQLMiddleware)
+  @Mutation(returns => Fasting)
+  async editStartEndFasting(
+    @Ctx() context: GraphQLContext,
+    @Arg('id') fastingId: string,
+    @Arg('fasting') fastingInput: FastingUpdateInput,
+  ): Promise<Fasting> {
+    return await this.FastingsRepository.editStartEndDate(context.token.client._id, fastingId, fastingInput)
   }
 
   @UseMiddleware(AuthenticationGraphQLMiddleware, TokenGraphQLMiddleware)

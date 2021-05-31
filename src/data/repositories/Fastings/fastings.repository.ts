@@ -65,11 +65,45 @@ export class FastingsRepository {
     return true
   }
 
-  public async edit(customerId: string, fastingId: string, fastingInput: FastingUpdateInput): Promise<boolean> {
+  public async edit(customerId: string, fastingId: string, fastingInput: FastingUpdateInput): Promise<CustomerFastEntity> {
     this.LoadFastingsDB(customerId);
     const edit = await this.CustomerFastingsDBDataSource.update(fastingId, { ...fastingInput } as CustomerFastEntity)
+    const { ok } = edit;
+    if (!ok) throw Error("Edit Fasting Error");
+
+    const fasting = await this.CustomerFastingsDBDataSource.get(fastingId)
+    return fasting
+  }
+
+  public async editStartEndDate(customerId: string, fastingId: string, fastingInput: FastingUpdateInput): Promise<CustomerFastEntity> {
+    this.LoadFastingsDB(customerId);
+    const fasting = await this.CustomerFastingsDBDataSource.get(fastingId)
+
+    let differenceInTimeStartDates: number = 0;
+    if (fastingInput.startDate.getTime() > fasting.startDate.getTime()) {
+      differenceInTimeStartDates = fastingInput.startDate.getTime() - fasting.startDate.getTime()
+      fasting.endDate.setTime(
+        fasting.endDate.getTime() +
+        differenceInTimeStartDates
+      )
+    }
+    else {
+      differenceInTimeStartDates = fasting.startDate.getTime() - fastingInput.startDate.getTime()
+      fasting.endDate.setTime(
+        fasting.endDate.getTime() - 
+        differenceInTimeStartDates
+      )
+    }
+
+    const edit = await this.CustomerFastingsDBDataSource.update(fastingId, {
+      ...fastingInput,
+      endDate: fasting.endDate
+    } as CustomerFastEntity)
+
     const { ok } = edit
     if (!ok) throw Error("Edit Fasting Error");
-    return true
+
+    const newFasting = await this.CustomerFastingsDBDataSource.get(fastingId)
+    return newFasting
   }
 }
