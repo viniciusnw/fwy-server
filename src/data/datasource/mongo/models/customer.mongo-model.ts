@@ -4,7 +4,7 @@ import { RequiredString, OptionalNumber, OptionalString, OptionalBuffer, Require
 
 export interface AvatarEntity {
   type: string,
-  data: Buffer 
+  data: Buffer
 }
 export interface CustomerEntity extends Document {
   name: string;

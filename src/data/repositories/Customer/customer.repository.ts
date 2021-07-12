@@ -1,9 +1,9 @@
 import { Service } from "typedi";
 import { encrypt, decrypt } from "core/services";
-import { MongoDataSource, JSONDataSource } from "data/datasource";
-import { CustomerEntity, AvatarEntity } from "data/datasource/mongo/models";
+import { MongoDataSource } from "data/datasource";
 
 // INPUT TYPES
+import { CustomerEntity, AvatarEntity } from "data/datasource/mongo/models";
 import { CustomerRegisterInput } from "resolvers/Customer/types/customer-register.input";
 import { CustomerUpdateInput } from "resolvers/Customer/types/customer-update.input";
 import { Avatar } from "resolvers/Customer/types/customer.object-type";

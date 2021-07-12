@@ -1,14 +1,25 @@
 
 import { Document, model, Schema, models } from 'mongoose';
-import { RequiredString, RequiredDate, OptionalString, RequiredNumber, OptionalDate } from 'core/types';
+import { RequiredString, RequiredDate, OptionalString, RequiredNumber, OptionalDate, RequiredBuffer } from 'core/types';
 
+export interface PictureEntity {
+  type: string,
+  data: Buffer
+}
+
+export interface EndFastDetails {
+  howFelling: number,
+  picture?: PictureEntity,
+  notes?: string
+}
 export interface CustomerFastEntity extends Document {
   name: string
   endDate: Date
   color: string
   startDate: Date
-  finished: Date | null
+  finished?: Date
   initialTotalHours: number
+  endFastDetails?: EndFastDetails
 }
 
 export const CustomerFastingsMongoModel = (customerId: string) => {
@@ -20,6 +31,14 @@ export const CustomerFastingsMongoModel = (customerId: string) => {
       color: OptionalString,
       finished: OptionalDate,
       startDate: RequiredDate,
-      initialTotalHours: RequiredNumber
+      initialTotalHours: RequiredNumber,
+      endFastDetails: new Schema({
+        howFelling: RequiredNumber,
+        notes: OptionalString,
+        picture: new Schema({
+          type: RequiredString,
+          data: RequiredBuffer
+        }, { strict: false })
+      }, { strict: false })
     }));
 }

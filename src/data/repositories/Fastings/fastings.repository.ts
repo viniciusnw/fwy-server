@@ -2,7 +2,9 @@ import { Service } from 'typedi';
 import { MongoDataSource } from 'data/datasource';
 import { CustomerFastEntity, CustomerPresetFastEntity } from "data/datasource/mongo/models";
 
+import { PictureEntity } from "data/datasource/mongo/models";
 import { PresetInput } from "resolvers/Fasting/types/preset.input";
+import { EndFastingInput } from "resolvers/Fasting/types/end-fasting.input";
 import { FastingInput } from "resolvers/Fasting/types/fasting.input";
 import { FastingUpdateInput } from "resolvers/Fasting/types/fasting-update.input";
 
@@ -55,11 +57,24 @@ export class FastingsRepository {
     return await this.CustomerFastingsDBDataSource.getActives(findOne);
   }
 
-  public async endSaveById(customerId: string, fastingId: string, save: boolean): Promise<boolean> {
+  public async endSaveById(customerId: string, endFasting: EndFastingInput): Promise<boolean> {
     this.LoadFastingsDB(customerId);
-    const fasting = save
-      ? await this.CustomerFastingsDBDataSource.update(fastingId, { finished: new Date() } as CustomerFastEntity)
+
+    const { customEndDate, fastingId, howFelling, notes, picture } = endFasting
+
+    const endDate = customEndDate ? new Date(customEndDate) : new Date()
+
+    const fasting = endFasting.save
+      ? await this.CustomerFastingsDBDataSource.update(fastingId, {
+        finished: endDate, endFastDetails: {
+          howFelling,
+          notes,
+          picture: this.createPictureBufferEntity(endFasting)
+        }
+      } as CustomerFastEntity)
       : await this.CustomerFastingsDBDataSource.delete(fastingId)
+
+
     const { ok } = fasting;
     if (!ok) throw Error("Finish Fasting Error");
     return true
@@ -90,7 +105,7 @@ export class FastingsRepository {
     else {
       differenceInTimeStartDates = fasting.startDate.getTime() - fastingInput.startDate.getTime()
       fasting.endDate.setTime(
-        fasting.endDate.getTime() - 
+        fasting.endDate.getTime() -
         differenceInTimeStartDates
       )
     }
@@ -106,4 +121,16 @@ export class FastingsRepository {
     const newFasting = await this.CustomerFastingsDBDataSource.get(fastingId)
     return newFasting
   }
+
+  private createPictureBufferEntity(endFasting: EndFastingInput): PictureEntity {
+    let picture = null;
+    if (picture.avatar) {
+      picture = {
+        data: Buffer.from(endFasting.picture.data, "base64"),
+        type: endFasting.picture.type,
+      };
+    }
+    return picture;
+  }
+
 }

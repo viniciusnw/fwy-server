@@ -8,6 +8,7 @@ import { FastingsRepository } from 'data/repositories'
 import { PresetInput } from './types/preset.input';
 import { FastingInput } from './types/fasting.input';
 import { FastingUpdateInput } from './types/fasting-update.input';
+import { EndFastingInput } from './types/end-fasting.input';
 // OUTPUT TYPES
 import { Fasting } from './types/fasting.object-type';
 import { Preset } from './types/preset.object-type';
@@ -52,10 +53,9 @@ export class FastingGraphQLResolver {
   @Mutation(returns => Boolean)
   async endFasting(
     @Ctx() context: GraphQLContext,
-    @Arg('save') save: boolean,
-    @Arg('fastingId') fastingId: string,
+    @Arg('endFasting') endFasting: EndFastingInput,
   ): Promise<boolean> {
-    return await this.FastingsRepository.endSaveById(context.token.client._id, fastingId, save)
+    return await this.FastingsRepository.endSaveById(context.token.client._id, endFasting)
   }
 
   @UseMiddleware(AuthenticationGraphQLMiddleware, TokenGraphQLMiddleware)

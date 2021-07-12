@@ -1,6 +1,6 @@
 {
-  "name": "br-takecare-api-server",
-  "version": "0.25.0",
+  "name": "br-fwy-api-server",
+  "version": "0.25.1",
   "description": "API Middleware Server",
   "scripts": {
     "====":"===PROD",
