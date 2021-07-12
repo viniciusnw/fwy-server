@@ -4,7 +4,7 @@ import { CustomerFastEntity, CustomerPresetFastEntity } from "data/datasource/mo
 
 import { PictureEntity } from "data/datasource/mongo/models";
 import { PresetInput } from "resolvers/Fasting/types/preset.input";
-import { EndFastingInput } from "resolvers/Fasting/types/end-fasting.input";
+import { EndFastingInput, PictureInput } from "resolvers/Fasting/types/end-fasting.input";
 import { FastingInput } from "resolvers/Fasting/types/fasting.input";
 import { FastingUpdateInput } from "resolvers/Fasting/types/fasting-update.input";
 
@@ -69,7 +69,7 @@ export class FastingsRepository {
         finished: endDate, endFastDetails: {
           howFelling,
           notes,
-          picture: this.createPictureBufferEntity(endFasting)
+          picture: this.createPictureBufferEntity(picture)
         }
       } as CustomerFastEntity)
       : await this.CustomerFastingsDBDataSource.delete(fastingId)
@@ -122,12 +122,12 @@ export class FastingsRepository {
     return newFasting
   }
 
-  private createPictureBufferEntity(endFasting: EndFastingInput): PictureEntity {
+  private createPictureBufferEntity(pictureInput: PictureInput): PictureEntity {
     let picture = null;
-    if (picture.avatar) {
+    if (pictureInput) {
       picture = {
-        data: Buffer.from(endFasting.picture.data, "base64"),
-        type: endFasting.picture.type,
+        data: Buffer.from(pictureInput.data, "base64"),
+        type: pictureInput.type,
       };
     }
     return picture;
