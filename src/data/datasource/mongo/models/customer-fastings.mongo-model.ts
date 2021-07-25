@@ -1,6 +1,6 @@
 
 import { Document, model, Schema, models } from 'mongoose';
-import { RequiredString, RequiredDate, OptionalString, RequiredNumber, OptionalDate, RequiredBuffer } from 'core/types';
+import { RequiredString, RequiredDate, OptionalString, RequiredNumber, OptionalDate, OptionalBuffer, OptionalNumber } from 'core/types';
 
 export interface PictureEntity {
   type: string,
@@ -32,13 +32,13 @@ export const CustomerFastingsMongoModel = (customerId: string) => {
       finished: OptionalDate,
       startDate: RequiredDate,
       initialTotalHours: RequiredNumber,
-      endFastDetails: new Schema({
-        howFelling: RequiredNumber,
+      endFastDetails: {
+        howFelling: OptionalNumber,
         notes: OptionalString,
-        picture: new Schema({
-          type: RequiredString,
-          data: RequiredBuffer
-        }, { strict: false })
-      }, { strict: false })
+        picture: {
+          type: OptionalString,
+          data: OptionalBuffer
+        }
+      }
     }));
 }

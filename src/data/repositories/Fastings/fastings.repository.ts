@@ -25,8 +25,24 @@ export class FastingsRepository {
 
   public async savePreset(customerId: string, presetInput: PresetInput): Promise<boolean> {
     this.LoadFastingsDB(customerId);
+
+    const presetSaved = await this.CustomerPresetsFastingsDBDataSource.getByIndex(presetInput.index);
+
+    if (presetSaved) return await this.updatePreset(customerId, {
+      ...presetInput,
+      id: presetSaved.id,
+    })
+
     const preset = await this.CustomerPresetsFastingsDBDataSource.create(presetInput as CustomerPresetFastEntity);
     return !!preset.toObject()._id
+  }
+
+  public async updatePreset(customerId: string, presetInput: PresetInput): Promise<boolean> {
+    this.LoadFastingsDB(customerId);
+    const fasting = await this.CustomerPresetsFastingsDBDataSource.update(presetInput.id, presetInput as CustomerPresetFastEntity);
+    const { ok } = fasting;
+    if (!ok) throw Error("edit preset error");
+    return true
   }
 
   public async getPresets(customerId: string): Promise<CustomerPresetFastEntity[]> {
@@ -43,7 +59,7 @@ export class FastingsRepository {
       ...fastingInput,
       initialTotalHours: differenceInHours
     } as CustomerFastEntity)
-    return fasting.toObject()._id
+    return fasting.id
   }
 
   public async getById(customerId: string, fastingId: string): Promise<CustomerFastEntity> {
@@ -66,9 +82,9 @@ export class FastingsRepository {
 
     const fasting = endFasting.save
       ? await this.CustomerFastingsDBDataSource.update(fastingId, {
-        finished: endDate, endFastDetails: {
-          howFelling,
+        finished: endDate, endFastDetails: (howFelling || notes || picture) && {
           notes,
+          howFelling,
           picture: this.createPictureBufferEntity(picture)
         }
       } as CustomerFastEntity)
@@ -76,7 +92,7 @@ export class FastingsRepository {
 
 
     const { ok } = fasting;
-    if (!ok) throw Error("Finish Fasting Error");
+    if (!ok) throw Error("finish fasting error");
     return true
   }
 
@@ -84,7 +100,7 @@ export class FastingsRepository {
     this.LoadFastingsDB(customerId);
     const edit = await this.CustomerFastingsDBDataSource.update(fastingId, { ...fastingInput } as CustomerFastEntity)
     const { ok } = edit;
-    if (!ok) throw Error("Edit Fasting Error");
+    if (!ok) throw Error("edit fasting error");
 
     const fasting = await this.CustomerFastingsDBDataSource.get(fastingId)
     return fasting
@@ -116,7 +132,7 @@ export class FastingsRepository {
     } as CustomerFastEntity)
 
     const { ok } = edit
-    if (!ok) throw Error("Edit Fasting Error");
+    if (!ok) throw Error("edit fasting error");
 
     const newFasting = await this.CustomerFastingsDBDataSource.get(fastingId)
     return newFasting
