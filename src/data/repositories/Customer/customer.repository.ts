@@ -23,7 +23,7 @@ export class CustomerRepository {
     const customer = await this.CustomerDBDataSource.getByEmail(customerInput.email);
     if (customer) throw Error("e-mail already exists");
     customerInput.password = encrypt(customerInput.password);
-    const avatar = this.createAvatarBufferEntity(customerInput);
+    const avatar = await this.createAvatarBufferEntity(customerInput);
     const createdCustomer = await this.CustomerDBDataSource.create({
       ...customerInput,
       avatar,
@@ -38,7 +38,7 @@ export class CustomerRepository {
   }
 
   public async update(id: string, customerInput: CustomerUpdateInput): Promise<CustomerEntity> {
-    const avatar = this.createAvatarBufferEntity(customerInput);
+    const avatar = await this.createAvatarBufferEntity(customerInput, id);
     const update = await this.CustomerDBDataSource.updateById(id, {
       ...customerInput,
       avatar,
@@ -53,13 +53,17 @@ export class CustomerRepository {
     return { email: customer.email, password: decrypt(customer.password) };
   }
 
-  private createAvatarBufferEntity(customerInput: CustomerRegisterInput): AvatarEntity {
+  private async createAvatarBufferEntity(customerInput: CustomerRegisterInput, id?: string): Promise<AvatarEntity> {
     let avatar = null;
     if (customerInput.avatar) {
       avatar = {
         data: Buffer.from(customerInput.avatar.data, "base64"),
         type: customerInput.avatar.type,
       };
+    }
+    else {
+      const customer = await this.CustomerDBDataSource.getById(id);
+      avatar = customer?.avatar
     }
     return avatar;
   }
