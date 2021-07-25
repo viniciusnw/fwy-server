@@ -1,7 +1,7 @@
 #*** Build Image ******************************************************************
 
 # Pull base image
-FROM node:12.16.1-alpine3.9
+FROM node:16.5.0-alpine3.11
 
 # Install Basic Packages
 RUN npm install -g nodemon
