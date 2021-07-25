@@ -21,13 +21,13 @@ export class GeneralRepository {
 
   public async addItemWhiteList(email: string): Promise<boolean> {
     const emailAdded = await this.WhiteListDBDataSource.create({ email } as WhiteListItemEntity);
-    if (!emailAdded) throw Error("Error in add Email");
+    if (!emailAdded) throw Error("error in add email");
     return true
   }
 
   public async emailInWhiteList(email: string): Promise<boolean> {
     const inList = await this.WhiteListDBDataSource.getByEmail(email);
-    if (!inList) throw Error("Email not authorized");
+    if (!inList) throw Error("email not authorized");
     return true
   }
 }

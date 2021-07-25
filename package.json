@@ -2,21 +2,6 @@
   "name": "br-fwy-api-server",
   "version": "0.25.1",
   "description": "API Middleware Server",
-  "scripts": {
-    "====":"===PROD",
-    "start": "yarn run server",
-    "server": "nodemon --delay 80ms --exec 'node --inspect=0.0.0.0:56745' -r ts-node/register src/index.ts server",
-    "===":"===DEV",
-    "start:dev": "yarn dockerdown && yarn dockerup",
-    "dockerup": "docker-compose --file docker-compose.dev.yml up --build --force-recreate",
-    "dockerdown": "docker-compose --file docker-compose.dev.yml down && docker-compose --file docker-compose.dev.yml stop",
-    "server:debug": "nodemon --no-deprecation -r ts-node/register src/index.ts server",
-    "=====":"===WORKERS/JOBS",
-    "exec": "node -r ts-node/register src/index.ts",
-    "job:database-migration": "yarn run exec -- job:database-migration",
-    "worker:database-migration": "yarn run exec -- worker:database-migration",
-    "worker:database-migration:force": "yarn run exec -- worker:database-migration force"
-  },
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -83,5 +68,20 @@
     "sinon": "7.1.1",
     "supertest": "3.3.0",
     "tslint": "5.11.0"
+  },
+  "scripts": {
+    "====": "===PROD",
+    "start": "yarn run server",
+    "server": "nodemon --delay 80ms --exec 'node --inspect=0.0.0.0:56745' -r ts-node/register src/index.ts server",
+    "===": "===DEV",
+    "start:dev": "yarn dockerdown && yarn dockerup",
+    "dockerup": "docker-compose --file docker-compose.dev.yml up --build --force-recreate",
+    "dockerdown": "docker-compose --file docker-compose.dev.yml down && docker-compose --file docker-compose.dev.yml stop",
+    "server:debug": "nodemon --no-deprecation -r ts-node/register src/index.ts server",
+    "=====": "===WORKERS/JOBS",
+    "exec": "node -r ts-node/register src/index.ts",
+    "job:database-migration": "yarn run exec -- job:database-migration",
+    "worker:database-migration": "yarn run exec -- worker:database-migration",
+    "worker:database-migration:force": "yarn run exec -- worker:database-migration force"
   }
 }

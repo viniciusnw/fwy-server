@@ -88,6 +88,16 @@ export class FastingGraphQLResolver {
   }
 
   @UseMiddleware(AuthenticationGraphQLMiddleware, TokenGraphQLMiddleware)
+  @Mutation(returns => Boolean)
+  async updatePreset(
+    @Ctx() context: GraphQLContext,
+    @Arg('preset') presetInput: PresetInput,
+  ): Promise<boolean> {
+    const { _id } = context.token.client
+    return await this.FastingsRepository.updatePreset(_id, presetInput)
+  }
+
+  @UseMiddleware(AuthenticationGraphQLMiddleware, TokenGraphQLMiddleware)
   @Query(returns => [Preset])
   async getPresets(
     @Ctx() context: GraphQLContext,

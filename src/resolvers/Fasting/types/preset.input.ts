@@ -3,6 +3,12 @@ import { InputType, Field } from 'type-graphql';
 @InputType()
 export class PresetInput {
 
+  @Field({ nullable: true })
+  id: string
+
+  @Field({ nullable: true })
+  index: number
+
   @Field()
   name: string
 
@@ -12,9 +18,6 @@ export class PresetInput {
   @Field()
   days: number
 
-  @Field()
+  @Field({ nullable: true })
   color: string
-
-  @Field()
-  index: number
 }

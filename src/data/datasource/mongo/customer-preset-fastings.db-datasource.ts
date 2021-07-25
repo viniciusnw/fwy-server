@@ -11,4 +11,9 @@ export class CustomerPresetsFastingsDBDataSource extends DBDataSource<CustomerPr
   constructor(customerId) {
     super(CustomerPresetFastingsMongoModel(customerId));
   }
+
+  @ThrowsWhenUncaughtException(DataSourceError)
+  async getByIndex(index: number): Promise<CustomerPresetFastEntity> {
+    return await this.model.findOne({ index })
+  }
 }
