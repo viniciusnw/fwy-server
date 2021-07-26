@@ -8,17 +8,17 @@ export interface PictureEntity {
 }
 
 export interface EndFastDetails {
+  notes?: string,
   howFelling: number,
   picture?: PictureEntity,
-  notes?: string
 }
 export interface CustomerFastEntity extends Document {
-  name: string
-  endDate: Date
-  color: string
-  startDate: Date
-  finished?: Date
-  initialTotalHours: number
+  name: string,
+  color: string,
+  endDate: Date,
+  startDate: Date,
+  finished?: Date,
+  initialTotalHours: number,
   endFastDetails?: EndFastDetails
 }
 

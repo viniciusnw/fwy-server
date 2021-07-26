@@ -31,10 +31,13 @@ export class CustomerDBDataSource extends DBDataSource<CustomerEntity> {
       .collation({ locale: 'en', strength: 2 })
       .limit(1).exec()
 
-    const caseInsensitiveEmail = customer.email
+    const caseInsensitiveEmail = customer?.email
     if (!caseInsensitiveEmail) throw Error("Invalid email or password");
 
-    return await this.model.findOne({ email: caseInsensitiveEmail, password }).limit(1).exec()
+    return await this.model.findOne({
+      email: caseInsensitiveEmail,
+      password
+    }).limit(1).exec()
   }
 
   @ThrowsWhenUncaughtException(DataSourceError)
