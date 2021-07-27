@@ -27,8 +27,8 @@ export class CustomerGraphQLResolver {
     @Arg('customer') customerInput: CustomerRegisterInput,
   ): Promise<CustomerRegister> {
 
-    const inWhiteList = await this.GeneralRepository.emailInWhiteList(customerInput.email);
-    if (!inWhiteList) return
+    // const inWhiteList = await this.GeneralRepository.emailInWhiteList(customerInput.email);
+    // if (!inWhiteList) return
 
     const createdCustomer = await this.CustomerRepository.create(customerInput);
     const login = { email: customerInput.email, password: customerInput.password };
