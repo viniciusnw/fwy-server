@@ -3,3 +3,4 @@ export * from './white-list.mongo-model';
 export * from './customer-chat.mongo-model';
 export * from './customer-fastings.mongo-model';
 export * from './customer-preset-fastings.mongo-model';
+export * from './customer-admin.mongo-model';

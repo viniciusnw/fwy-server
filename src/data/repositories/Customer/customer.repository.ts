@@ -3,7 +3,8 @@ import { encrypt, decrypt } from "core/services";
 import { MongoDataSource } from "data/datasource";
 
 // INPUT TYPES
-import { CustomerEntity, AvatarEntity } from "data/datasource/mongo/models";
+import { Pagination } from 'resolvers/General/types/pagination.input'
+import { CustomerEntity, AvatarEntity, CustomerAdminEntity } from "data/datasource/mongo/models";
 import { CustomerRegisterInput } from "resolvers/Customer/types/customer-register.input";
 import { CustomerUpdateInput } from "resolvers/Customer/types/customer-update.input";
 import { Avatar } from "resolvers/Customer/types/customer.object-type";
@@ -16,12 +17,36 @@ type CreateLoginModel = {
 @Service()
 export class CustomerRepository {
   constructor(
-    private CustomerDBDataSource: MongoDataSource.CustomerDBDataSource
+    private CustomerDBDataSource: MongoDataSource.CustomerDBDataSource,
+    private CustomerAdminDBDataSource: MongoDataSource.CustomerAdminDBDataSource
   ) { }
+
+  public async listCustomers(pagination: Pagination): Promise<CustomerEntity[]> {
+    const { pageNumber, nPerPage } = pagination;
+    return await this.CustomerDBDataSource.listPaginated(pageNumber, nPerPage);
+  }
+
+  public async search(term: string, pagination: Pagination): Promise<CustomerEntity[]> {
+    const { pageNumber, nPerPage } = pagination;
+    return await this.CustomerDBDataSource.search(term, pageNumber, nPerPage);
+  }
+
+  public async createAdmin(email: string): Promise<boolean> {
+    const customer = await this.CustomerDBDataSource.getByEmail(email);
+
+    if (customer) {
+      const admin = await this.CustomerAdminDBDataSource.create({
+        email: customer.email,
+      } as CustomerAdminEntity);
+
+      return !!admin.email
+    }
+    throw Error("E-mail not registered");
+  }
 
   public async create(customerInput: CustomerRegisterInput): Promise<CustomerEntity> {
     const customer = await this.CustomerDBDataSource.getByEmail(customerInput.email);
-    if (customer) throw Error("e-mail already exists");
+    if (customer) throw Error("E-mail already exists");
     customerInput.password = encrypt(customerInput.password);
     const avatar = await this.createAvatarBufferEntity(customerInput);
     const createdCustomer = await this.CustomerDBDataSource.create({
@@ -31,10 +56,16 @@ export class CustomerRepository {
     return createdCustomer.toObject();
   }
 
-  public async login(email: string, password: string): Promise<CustomerEntity> {
+  public async login(email: string, password: string, isAdmin?: boolean): Promise<CustomerEntity> {
+
+    if (isAdmin) {
+      const admin = await this.CustomerAdminDBDataSource.getByEmail(email)
+      if (!admin) throw Error("Invalid email or password")
+    }
+
     const customer = await this.CustomerDBDataSource.getByEmailAndPass(email, encrypt(password));
     if (!customer) throw Error("Invalid email or password");
-    return customer.toObject();
+    return customer.toObject()
   }
 
   public async update(id: string, customerInput: CustomerUpdateInput): Promise<CustomerEntity> {
@@ -47,10 +78,6 @@ export class CustomerRepository {
     if (!ok) throw Error("update customer error");
     const customer = await this.CustomerDBDataSource.getById(id);
     return { ...customer } as CustomerEntity;
-  }
-
-  public createLoginModel(customer: CustomerEntity): CreateLoginModel {
-    return { email: customer.email, password: decrypt(customer.password) };
   }
 
   private async createAvatarBufferEntity(customerInput: CustomerRegisterInput, id?: string): Promise<AvatarEntity> {
@@ -77,5 +104,9 @@ export class CustomerRepository {
       };
     }
     return avatar;
+  }
+
+  public createLoginModel(customer: CustomerEntity): CreateLoginModel {
+    return { email: customer.email, password: decrypt(customer.password) };
   }
 }

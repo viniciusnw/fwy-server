@@ -6,8 +6,8 @@ import { AuthenticationGraphQLMiddleware, TokenGraphQLMiddleware } from 'core/mi
 import { ChatRepository } from 'data/repositories'
 // INPUT TYPES
 import { Pagination } from 'resolvers/General/types/pagination.input'
-// OUTPUT TYPES
 import { NextPagination } from 'resolvers/General/types/next-pagination.input'
+// OUTPUT TYPES
 import { GetChatMessages } from './types/customer-login.object-type'
 
 @Resolver()

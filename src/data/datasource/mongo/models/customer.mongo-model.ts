@@ -21,8 +21,14 @@ export interface CustomerEntity extends Document {
 }
 
 export const CustomerMongoModel = model<CustomerEntity>('Customer', new Schema({
-  name: RequiredString,
-  email: RequiredString,
+  name: {
+    ...RequiredString,
+    index: true,
+  },
+  email: {
+    ...RequiredString,
+    index: true,
+  },
   phone: RequiredString,
   birthday: RequiredDate,
   gender: OptionalString,

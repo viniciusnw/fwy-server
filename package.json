@@ -70,8 +70,8 @@
     "server:debug": "nodemon --no-deprecation -r ts-node/register src/index.ts server",
     "=====": "===WORKERS/JOBS",
     "exec": "node -r ts-node/register src/index.ts",
+    "worker:create-admin": "yarn run exec -- worker:create-admin",
     "job:database-migration": "yarn run exec -- job:database-migration",
-    "worker:database-migration": "yarn run exec -- worker:database-migration",
-    "worker:database-migration:force": "yarn run exec -- worker:database-migration force"
+    "worker:database-migration:param": "yarn run exec -- worker:database-migration param"
   }
 }
