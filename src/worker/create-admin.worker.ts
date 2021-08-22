@@ -7,6 +7,8 @@ import { CustomerRepository } from 'data/repositories'
 
 declare var process;
 
+const { NODE_ENV } = process.env;
+
 export default class CreateAdmin implements RunnerType {
 
   constructor() { }
@@ -42,10 +44,7 @@ export default class CreateAdmin implements RunnerType {
     } = ENV_NAMES
 
     // ENV
-    Container.set('DEV_MODE', () => {
-      const { NODE_ENV } = process.env;
-      return NODE_ENV === 'development'
-    });
+    Container.set('DEV_MODE', NODE_ENV === 'development');
 
     // MONGO
     Container.set(DATABASE_URL, process.env.DATABASE_URL);
