@@ -29,9 +29,6 @@ export class CustomerGraphQLResolver {
     @Arg('customer') customerInput: CustomerRegisterInput,
   ): Promise<CustomerRegister> {
 
-    // const inWhiteList = await this.GeneralRepository.emailInWhiteList(customerInput.email);
-    // if (!inWhiteList) return
-
     const createdCustomer = await this.CustomerRepository.create(customerInput);
     const login = { email: customerInput.email, password: customerInput.password };
     const retoken = await this.AuthRepository.createReToken(login);
@@ -106,8 +103,6 @@ export class CustomerGraphQLResolver {
     if (term) listCustomers = await this.CustomerRepository.search(term, pagination);
     else listCustomers = await this.CustomerRepository.listCustomers(pagination);
 
-    console.log(term, listCustomers)
-
     const hasNextPage = listCustomers.length == pagination.nPerPage;
     const nextPagination = {
       ...pagination,
@@ -123,5 +118,18 @@ export class CustomerGraphQLResolver {
       customers,
       nextPagination
     } as CustomerList
+  }
+
+  @UseMiddleware(AuthenticationGraphQLMiddleware, TokenGraphQLMiddleware)
+  @Query(returns => Customer)
+  async getCustomer(
+    @Ctx() context: GraphQLContext,
+    @Arg('customerId') id: string,
+  ): Promise<Customer> {
+    const customer = await this.CustomerRepository.getById(id)
+    return {
+      ...customer,
+      avatar: this.CustomerRepository.createAvatarObjectType(customer)
+    } as Customer
   }
 }

@@ -1,7 +1,7 @@
 
-import { SERVICES_NAMES } from 'core/constants'
-import { Container, Service } from 'typedi';
+import { SERVICES_NAMES, ENV_NAMES } from 'core/constants'
 import { JwtService } from 'core/services';
+import { Container, Service, Inject } from 'typedi';
 import { Token } from 'resolvers/General/types/token.object-type'
 
 const WebSocket = require('ws');
@@ -19,7 +19,9 @@ export class WSConfigure {
   private WSClients: Array<WSClients> = [];
   private jwtService: JwtService = Container.get(JwtService);
 
-  constructor() {
+  constructor(
+    @Inject(ENV_NAMES.DEV) protected DEV,
+  ) {
     Container.set(SERVICES_NAMES.WS_CLIENTS, this.WSClients);
   }
 
@@ -37,7 +39,9 @@ export class WSConfigure {
 
     const { client: { _id } } = tokenDecrypted;
     this.WSClients.push({ _id, socket });
-    console.log(`[WS][CONNECT]:`, _id);
+    if (this.DEV) {
+      console.log(`[WS][CONNECT]:`, _id);
+    }
     Container.set(SERVICES_NAMES.WS_CLIENTS, this.WSClients);
   }
 
@@ -45,7 +49,11 @@ export class WSConfigure {
     socket.on('close', () => {
       this.WSClients = this.WSClients.filter(s => {
         if (s.socket !== socket) return true
-        else console.log(`[WS][DISCONNECT]:`, s._id);
+        else {
+          if (this.DEV) {
+            console.log(`[WS][DISCONNECT]:`, s._id);
+          }
+        }
       });
       Container.set(SERVICES_NAMES.WS_CLIENTS, this.WSClients);
     });

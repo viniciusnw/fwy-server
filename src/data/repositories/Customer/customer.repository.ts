@@ -21,6 +21,11 @@ export class CustomerRepository {
     private CustomerAdminDBDataSource: MongoDataSource.CustomerAdminDBDataSource
   ) { }
 
+  public async getById(customerId: string): Promise<CustomerEntity> {
+    const customer = await this.CustomerDBDataSource.get(customerId);
+    return customer
+  }
+
   public async listCustomers(pagination: Pagination): Promise<CustomerEntity[]> {
     const { pageNumber, nPerPage } = pagination;
     return await this.CustomerDBDataSource.listPaginated(pageNumber, nPerPage);
@@ -97,7 +102,7 @@ export class CustomerRepository {
 
   public createAvatarObjectType(customer: CustomerEntity): Avatar {
     let avatar = null;
-    if (customer.avatar) {
+    if (customer?.avatar?.data && customer?.avatar?.type) {
       avatar = {
         type: customer.avatar.type,
         data: customer.avatar.data.toString('base64'),

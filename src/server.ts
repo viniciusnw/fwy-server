@@ -57,10 +57,11 @@ export default class Server implements RunnerType {
       MEMCACHEDCLOUD,
       CACHE_EXPIRATION,
       CRYPTO_SECRET_KEY,
+      DEV
     } = ENV_NAMES
 
     // ENV
-    Container.set('DEV_MODE', () => {
+    Container.set(DEV, () => {
       const { NODE_ENV } = process.env;
       return NODE_ENV === 'development'
     });

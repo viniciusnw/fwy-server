@@ -105,4 +105,15 @@ export class FastingGraphQLResolver {
     const { _id } = context.token.client
     return await this.FastingsRepository.getPresets(_id)
   }
+
+  @UseMiddleware(AuthenticationGraphQLMiddleware, TokenGraphQLMiddleware)
+  @Query(returns => [Fasting])
+  async getLastFasting(
+    @Ctx() context: GraphQLContext,
+    @Arg('customerId') customerId: string,
+  ): Promise<Fasting[]> {
+    const last = await this.FastingsRepository.getLast(customerId)
+    console.log(last)
+    return last
+  }
 }
