@@ -13,7 +13,7 @@ import { ENV_NAMES } from 'core/constants';
 import { formatError, GlobalLoggerMiddleware } from 'core/middlewares';
 import { getIpAddress, MemCachedConfigure, DbConfigure, WSConfigure } from 'core/services'
 
-const { PORT, WSPORT, DEBUGPORT } = process.env;
+const { NODE_ENV, PORT, WSPORT, DEBUGPORT } = process.env;
 const ROOT = path.join(__dirname, '..');
 const ENABLE_GPL_PLAYGROUND = process.env.ENABLE_GPL_PLAYGROUND === 'true';
 
@@ -61,10 +61,7 @@ export default class Server implements RunnerType {
     } = ENV_NAMES
 
     // ENV
-    Container.set(DEV, () => {
-      const { NODE_ENV } = process.env;
-      return NODE_ENV === 'development'
-    });
+    Container.set(DEV, NODE_ENV === 'development');
 
     // MONGO
     Container.set(DATABASE_URL, process.env.DATABASE_URL);
