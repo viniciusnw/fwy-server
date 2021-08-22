@@ -24,10 +24,7 @@ export class CustomerFastingsDBDataSource extends DBDataSource<CustomerFastEntit
   }
 
   @ThrowsWhenUncaughtException(DataSourceError)
-  async getActives_old(): Promise<CustomerFastEntity[]> {
-    return await this.model.find({
-      finished: { $eq: null },
-      endDate: { $gt: new Date().toISOString() },
-    }).sort({ _id: 1 }).exec()
+  async getLast(): Promise<CustomerFastEntity[]> {
+    return await this.model.find().sort({ $natural: -1 }).limit(1).exec()
   }
 }

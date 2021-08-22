@@ -44,4 +44,34 @@ export class CustomerDBDataSource extends DBDataSource<CustomerEntity> {
   async updateById(id: string, customerInput: CustomerEntity): Promise<any> {
     return await this.update(id, { ...customerInput } as CustomerEntity);
   }
+
+  @ThrowsWhenUncaughtException(DataSourceError)
+  async search(term: string, pageNumber: number, nPerPage: number): Promise<CustomerEntity[]> {
+    return this.model
+      .find(
+        {
+          $or: [{
+            name: {
+              $regex: RegExp(".*" + term + ".*"),
+              $options: 'i'
+            }
+          }, {
+            email: {
+              $regex: RegExp(".*" + term + ".*"),
+              $options: 'i'
+            }
+          }, {
+            $text: {
+              $search: '"' + term + '"',
+              $caseSensitive: false,
+              $diacriticSensitive: false
+            }
+          }]
+        }
+      )
+      .collation({ locale: 'en', strength: 3 })
+      .sort({ _id: -1 })
+      .skip(pageNumber > 0 ? ((pageNumber - 1) * nPerPage) : 0)
+      .limit(nPerPage).exec()
+  }
 }

@@ -1,8 +1,7 @@
 require('path');
 require('./baseurl.hack')();
-const util = require('util');
-const path = require('path');
 require('dotenv').config();
+const util = require('util');
 
 import { Runner } from './runner';
 declare var process;

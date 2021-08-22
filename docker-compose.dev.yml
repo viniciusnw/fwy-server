@@ -45,8 +45,8 @@ services:
     networks:
       - server-network
     command: yarn start
+    # command: yarn worker:create-admin viniciusnw@hotmail.com.br
 
-
-networks: 
+networks:
   server-network:
     driver: bridge

@@ -7,7 +7,10 @@ import { AuthRepository, CustomerRepository, GeneralRepository } from 'data/repo
 // INPUT TYPES
 import { CustomerRegisterInput } from './types/customer-register.input';
 import { CustomerUpdateInput } from './types/customer-update.input';
+import { Pagination } from 'resolvers/General/types/pagination.input'
+import { NextPagination } from 'resolvers/General/types/next-pagination.input'
 // OBJ TYPES
+import { CustomerList } from './types/customer-list.object-type';
 import { CustomerRegister } from './types/customer-register.object-type';
 import { CustomerUpdate } from './types/customer-update.object-type';
 import { CustomerLogin } from './types/customer-login.object-type';
@@ -19,16 +22,12 @@ export class CustomerGraphQLResolver {
   constructor(
     private AuthRepository: AuthRepository,
     private CustomerRepository: CustomerRepository,
-    private GeneralRepository: GeneralRepository
   ) { }
 
   @Mutation(returns => CustomerRegister)
   async customerRegister(
     @Arg('customer') customerInput: CustomerRegisterInput,
   ): Promise<CustomerRegister> {
-
-    // const inWhiteList = await this.GeneralRepository.emailInWhiteList(customerInput.email);
-    // if (!inWhiteList) return
 
     const createdCustomer = await this.CustomerRepository.create(customerInput);
     const login = { email: customerInput.email, password: customerInput.password };
@@ -50,9 +49,10 @@ export class CustomerGraphQLResolver {
   async customerLogin(
     @Arg('email') email: string,
     @Arg('password') password: string,
+    @Arg('isAdmin', { nullable: true }) isAdmin: boolean,
   ): Promise<CustomerLogin> {
 
-    const customer = await this.CustomerRepository.login(email, password)
+    const customer = await this.CustomerRepository.login(email, password, isAdmin)
     const retoken = await this.AuthRepository.createReToken({ email, password });
     const token = await this.AuthRepository.createCustomerToken(customer, retoken);
 
@@ -89,5 +89,47 @@ export class CustomerGraphQLResolver {
       role: 'Customer',
       expirationTime: 86400000,
     } as CustomerUpdate;
+  }
+
+  @UseMiddleware(AuthenticationGraphQLMiddleware, TokenGraphQLMiddleware)
+  @Query(returns => CustomerList)
+  async listCustomers(
+    @Ctx() context: GraphQLContext,
+    @Arg('pagination') pagination: Pagination,
+    @Arg('term', { nullable: true }) term: string,
+  ): Promise<CustomerList> {
+
+    let listCustomers = []
+    if (term) listCustomers = await this.CustomerRepository.search(term, pagination);
+    else listCustomers = await this.CustomerRepository.listCustomers(pagination);
+
+    const hasNextPage = listCustomers.length == pagination.nPerPage;
+    const nextPagination = {
+      ...pagination,
+      nextPageNumber: hasNextPage ? pagination.pageNumber + 1 : null
+    } as NextPagination;
+
+    const customers = listCustomers.map(customer => ({
+      ...customer.toObject(),
+      avatar: this.CustomerRepository.createAvatarObjectType(customer)
+    }))
+
+    return {
+      customers,
+      nextPagination
+    } as CustomerList
+  }
+
+  @UseMiddleware(AuthenticationGraphQLMiddleware, TokenGraphQLMiddleware)
+  @Query(returns => Customer)
+  async getCustomer(
+    @Ctx() context: GraphQLContext,
+    @Arg('customerId') id: string,
+  ): Promise<Customer> {
+    const customer = await this.CustomerRepository.getById(id)
+    return {
+      ...customer,
+      avatar: this.CustomerRepository.createAvatarObjectType(customer)
+    } as Customer
   }
 }

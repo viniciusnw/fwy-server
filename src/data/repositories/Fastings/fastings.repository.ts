@@ -138,6 +138,11 @@ export class FastingsRepository {
     return newFasting
   }
 
+  public async getLast(customerId: string): Promise<CustomerFastEntity[]> {
+    this.LoadFastingsDB(customerId);
+    return await this.CustomerFastingsDBDataSource.getLast()
+  }
+
   private createPictureBufferEntity(pictureInput: PictureInput): PictureEntity {
     let picture = null;
     if (pictureInput) {
