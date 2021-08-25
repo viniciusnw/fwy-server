@@ -8,7 +8,7 @@ import { AuthRepository, CustomerRepository, GeneralRepository } from 'data/repo
 import { CustomerRegisterInput } from './types/customer-register.input';
 import { CustomerUpdateInput } from './types/customer-update.input';
 import { Pagination } from 'resolvers/General/types/pagination.input'
-import { NextPagination } from 'resolvers/General/types/next-pagination.input'
+import { NextPagination } from 'resolvers/General/types/next-pagination.object-type'
 // OBJ TYPES
 import { CustomerList } from './types/customer-list.object-type';
 import { CustomerRegister } from './types/customer-register.object-type';
