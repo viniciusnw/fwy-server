@@ -26,7 +26,9 @@ export class GlobalLoggerMiddleware implements MiddlewareInterface<GraphQLContex
       context.dataLoaderInitialized = true;
       return await next();
     } catch (err) {
-      console.info('[ERROR]: ', err)
+      if (this.DEV) {
+        console.info('[ERROR]: ', err)
+      }
       throw err;
     }
   }
