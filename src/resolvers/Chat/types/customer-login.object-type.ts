@@ -1,5 +1,5 @@
 import { ObjectType, Field } from 'type-graphql';
-import { NextPagination } from 'resolvers/General/types/next-pagination.input'
+import { NextPagination } from 'resolvers/General/types/next-pagination.object-type'
 
 @ObjectType()
 class Message {

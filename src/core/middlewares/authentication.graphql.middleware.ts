@@ -27,10 +27,7 @@ export class AuthenticationGraphQLMiddleware implements MiddlewareInterface<Grap
       const tokenDecrypted = this.jwtService.verify(authorization);
       if (!tokenDecrypted) throw new JwtValidationError(null, 400);
     }
-    else {
-      if (this.DEV)
-        throw new JwtValidationError('[MIDDLEWARE][Authentication][HEADERS]: Jwt not found', 400);
-    }
+    else throw new JwtValidationError('[MIDDLEWARE][Authentication][HEADERS]: Jwt not found', 400);
 
     return next();
   }
