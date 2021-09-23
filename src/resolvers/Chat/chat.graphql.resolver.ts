@@ -27,7 +27,11 @@ export class GeneralGraphQLResolver {
     const { _id } = context.token.client;
     const senders = ['customer', 'adm'];
     const sender = senders[customerId ? 1 : 0];
-    return await this.ChatRepository.sendMessage(customerId || _id, text, sender);
+    const comunicationIds = {
+      clientId: _id,
+      customerId,
+    }
+    return await this.ChatRepository.sendMessage(comunicationIds, text, sender);
   }
 
   @UseMiddleware(AuthenticationGraphQLMiddleware, TokenGraphQLMiddleware)
@@ -35,9 +39,10 @@ export class GeneralGraphQLResolver {
   async getChatMessages(
     @Ctx() context: GraphQLContext,
     @Arg('pagination') pagination: Pagination,
+    @Arg('customerId', { nullable: true }) customerId: string,
   ): Promise<GetChatMessages> {
-    const { _id: customerId } = context.token.client;
-    const messages = await this.ChatRepository.getMessagesByCustomerId(customerId, pagination);
+    const { _id } = context.token.client;
+    const messages = await this.ChatRepository.getMessagesByCustomerId(customerId || _id, pagination);
     const hasNextPage = messages.length == pagination.nPerPage;
     const nextPagination = {
       ...pagination,

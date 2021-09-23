@@ -3,18 +3,21 @@ import { Arg, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql
 import { AuthenticationGraphQLMiddleware, TokenGraphQLMiddleware } from 'core/middlewares';
 
 // REPOS
-import { AuthRepository, CustomerRepository, GeneralRepository } from 'data/repositories'
+import { AuthRepository, CustomerRepository } from 'data/repositories'
 // INPUT TYPES
 import { CustomerRegisterInput } from './types/customer-register.input';
 import { CustomerUpdateInput } from './types/customer-update.input';
 import { Pagination } from 'resolvers/General/types/pagination.input'
 import { NextPagination } from 'resolvers/General/types/next-pagination.object-type'
+import { CustomerConfigsInput } from './types/customer-configs.input'
+import { CustomerConfigs } from './types/customer-configs.object-type'
 // OBJ TYPES
 import { CustomerList } from './types/customer-list.object-type';
 import { CustomerRegister } from './types/customer-register.object-type';
 import { CustomerUpdate } from './types/customer-update.object-type';
 import { CustomerLogin } from './types/customer-login.object-type';
 import { Customer } from 'resolvers/Customer/types/customer.object-type'
+import { CustomerEntity } from 'data/datasource/mongo/models';
 
 @Resolver()
 export class CustomerGraphQLResolver {
@@ -24,9 +27,23 @@ export class CustomerGraphQLResolver {
     private CustomerRepository: CustomerRepository,
   ) { }
 
+  @UseMiddleware(AuthenticationGraphQLMiddleware, TokenGraphQLMiddleware)
+  @Mutation(returns => CustomerConfigs)
+  async setCustomerConfigs(
+    @Ctx() context: GraphQLContext,
+    @Arg('customerId', { nullable: true }) customerId: string,
+    @Arg('configs', { nullable: true }) configs: CustomerConfigsInput,
+  ): Promise<CustomerConfigs> {
+    const { token: { client: { _id } } } = context
+    let customerConfigs = await this.CustomerRepository
+      .setCustomerConfigs(customerId || _id, configs);
+    return customerConfigs as CustomerConfigs
+  }
+
   @Mutation(returns => CustomerRegister)
   async customerRegister(
     @Arg('customer') customerInput: CustomerRegisterInput,
+    @Arg('configs', { nullable: true }) configs: CustomerConfigsInput,
   ): Promise<CustomerRegister> {
 
     const createdCustomer = await this.CustomerRepository.create(customerInput);
@@ -35,7 +52,14 @@ export class CustomerGraphQLResolver {
     const token = await this.AuthRepository.createCustomerToken(createdCustomer, retoken);
 
     const avatar = this.CustomerRepository.createAvatarObjectType(createdCustomer)
-    const Customer = { ...createdCustomer, avatar } as Customer
+    let customerConfigs = await this.CustomerRepository
+      .setCustomerConfigs(createdCustomer._id, configs)
+
+    const Customer = {
+      ...createdCustomer,
+      configs: customerConfigs,
+      avatar
+    } as Customer
 
     return {
       ...Customer,
@@ -57,7 +81,14 @@ export class CustomerGraphQLResolver {
     const token = await this.AuthRepository.createCustomerToken(customer, retoken);
 
     const avatar = this.CustomerRepository.createAvatarObjectType(customer)
-    const Customer = { ...customer, avatar } as Customer
+    let customerConfigs = await this.CustomerRepository
+      .getCustomerConfigs(customer._id)
+
+    const Customer = {
+      ...customer,
+      configs: customerConfigs,
+      avatar
+    } as Customer
 
     return {
       ...Customer,
@@ -71,7 +102,7 @@ export class CustomerGraphQLResolver {
   @Mutation(returns => CustomerUpdate)
   async customerUpdate(
     @Ctx() context: GraphQLContext,
-    @Arg('customer') customerInput: CustomerUpdateInput,
+    @Arg('customer', { nullable: true }) customerInput: CustomerUpdateInput,
   ): Promise<CustomerUpdate> {
 
     const { token: { client: { _id } } } = context
@@ -81,7 +112,14 @@ export class CustomerGraphQLResolver {
     const token = await this.AuthRepository.createCustomerToken(customer, retoken);
 
     const avatar = this.CustomerRepository.createAvatarObjectType(customer)
-    const Customer = { ...customer, avatar } as Customer
+    let customerConfigs = await this.CustomerRepository
+      .getCustomerConfigs(customer._id)
+
+    const Customer = {
+      ...customer,
+      configs: customerConfigs,
+      avatar
+    } as Customer
 
     return {
       ...Customer,
@@ -99,7 +137,7 @@ export class CustomerGraphQLResolver {
     @Arg('term', { nullable: true }) term: string,
   ): Promise<CustomerList> {
 
-    let listCustomers = []
+    let listCustomers: Array<CustomerEntity>
     if (term) listCustomers = await this.CustomerRepository.search(term, pagination);
     else listCustomers = await this.CustomerRepository.listCustomers(pagination);
 
@@ -109,13 +147,16 @@ export class CustomerGraphQLResolver {
       nextPageNumber: hasNextPage ? pagination.pageNumber + 1 : null
     } as NextPagination;
 
-    const customers = listCustomers.map(customer => ({
+    const customers: Array<Customer> = listCustomers.map(customer => ({
       ...customer.toObject(),
+      configs: null,
       avatar: this.CustomerRepository.createAvatarObjectType(customer)
     }))
 
+    const filteredCustomers = customers.filter(customer => customer.email != context.token.client.email)
+
     return {
-      customers,
+      customers: filteredCustomers,
       nextPagination
     } as CustomerList
   }
@@ -127,8 +168,11 @@ export class CustomerGraphQLResolver {
     @Arg('customerId') id: string,
   ): Promise<Customer> {
     const customer = await this.CustomerRepository.getById(id)
+    let customerConfigs = await this.CustomerRepository
+      .getCustomerConfigs(customer._id)
     return {
       ...customer,
+      configs: customerConfigs,
       avatar: this.CustomerRepository.createAvatarObjectType(customer)
     } as Customer
   }
