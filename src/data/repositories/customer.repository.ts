@@ -18,25 +18,28 @@ type CreateLoginModel = {
 @Service()
 export class CustomerRepository {
 
-  private CustomerConfigsDBDataSource: MongoDataSource.CustomerConfigsDBDataSource
-  private LoadCustomerConfigsDB(customerId: string) {
-    this.CustomerConfigsDBDataSource = new MongoDataSource.CustomerConfigsDBDataSource(customerId);
-  }
-
   constructor(
     private CustomerDBDataSource: MongoDataSource.CustomerDBDataSource,
     private CustomerAdminDBDataSource: MongoDataSource.CustomerAdminDBDataSource,
+    private CustomerConfigsDBDataSource: MongoDataSource.CustomerConfigsDBDataSource
   ) { }
 
   public async getCustomerConfigs(customerId: string): Promise<CustomerConfigsEntity | null> {
-    this.LoadCustomerConfigsDB(customerId);
-    const config = await this.CustomerConfigsDBDataSource.list();
-    return config[0] || null
+    const configs = await this.CustomerConfigsDBDataSource.getByCustomerId(customerId);
+    return configs || null
   }
 
   public async setCustomerConfigs(customerId: string, configs: CustomerConfigsInput): Promise<CustomerConfigsEntity> {
-    this.LoadCustomerConfigsDB(customerId);
-    return await this.CustomerConfigsDBDataSource.create(configs as CustomerConfigsEntity);
+    const customerConfigs = await this.getCustomerConfigs(customerId);
+    if (!customerConfigs)
+      return await this.CustomerConfigsDBDataSource.create({
+        customerId,
+        ...configs
+      } as CustomerConfigsEntity);
+    else return await this.CustomerConfigsDBDataSource.update(
+      customerConfigs.toObject()._id,
+      configs as CustomerConfigsEntity
+    );
   }
 
   public async getById(customerId: string): Promise<CustomerEntity> {

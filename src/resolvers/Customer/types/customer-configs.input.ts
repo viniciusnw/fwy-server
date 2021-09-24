@@ -4,14 +4,14 @@ import { Field, InputType } from 'type-graphql';
 export class CustomerConfigsInput {
 
   @Field({ nullable: true })
-  chat: boolean;
+  chat?: boolean;
   
   @Field({ nullable: true })
-  weight: string;
+  weight?: string;
 
   @Field({ nullable: true })
-  height: string;
+  height?: string;
 
   @Field({ nullable: true })
-  language: string;
+  language?: string;
 }
