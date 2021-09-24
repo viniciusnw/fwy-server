@@ -1,8 +1,9 @@
 import { Field, ObjectType, Int } from 'type-graphql';
+import { CustomerConfigs } from './customer-configs.object-type';
 
 @ObjectType()
 export class Avatar {
-  
+
   @Field()
   type: string;
 
@@ -30,10 +31,10 @@ export class Customer {
 
   @Field()
   country: string;
-  
+
   @Field()
   state: string;
-  
+
   @Field({ nullable: true })
   gender: string;
 
@@ -42,6 +43,9 @@ export class Customer {
 
   @Field({ nullable: true })
   height: number;
+
+  @Field(type => CustomerConfigs, { nullable: true })
+  configs: CustomerConfigs;
 
   @Field(type => Avatar, { nullable: true })
   avatar?: Avatar;

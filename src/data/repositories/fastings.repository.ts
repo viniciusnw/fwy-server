@@ -13,15 +13,14 @@ export class FastingsRepository {
 
   private CustomerFastingsDBDataSource: MongoDataSource.CustomerFastingsDBDataSource
   private CustomerPresetsFastingsDBDataSource: MongoDataSource.CustomerPresetsFastingsDBDataSource
-
-  constructor(
-
-  ) { }
-
   private LoadFastingsDB(customerId: string) {
     this.CustomerFastingsDBDataSource = new MongoDataSource.CustomerFastingsDBDataSource(customerId);
     this.CustomerPresetsFastingsDBDataSource = new MongoDataSource.CustomerPresetsFastingsDBDataSource(customerId);
   }
+  
+  constructor(
+
+  ) { }
 
   public async savePreset(customerId: string, presetInput: PresetInput): Promise<boolean> {
     this.LoadFastingsDB(customerId);

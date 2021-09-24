@@ -4,7 +4,8 @@ import { MongoDataSource } from "data/datasource";
 
 // INPUT TYPES
 import { Pagination } from 'resolvers/General/types/pagination.input'
-import { CustomerEntity, AvatarEntity, CustomerAdminEntity } from "data/datasource/mongo/models";
+import { CustomerConfigsInput } from 'resolvers/Customer/types/customer-configs.input'
+import { CustomerEntity, AvatarEntity, CustomerAdminEntity, CustomerConfigsEntity } from "data/datasource/mongo/models";
 import { CustomerRegisterInput } from "resolvers/Customer/types/customer-register.input";
 import { CustomerUpdateInput } from "resolvers/Customer/types/customer-update.input";
 import { Avatar } from "resolvers/Customer/types/customer.object-type";
@@ -16,10 +17,30 @@ type CreateLoginModel = {
 
 @Service()
 export class CustomerRepository {
+
   constructor(
     private CustomerDBDataSource: MongoDataSource.CustomerDBDataSource,
-    private CustomerAdminDBDataSource: MongoDataSource.CustomerAdminDBDataSource
+    private CustomerAdminDBDataSource: MongoDataSource.CustomerAdminDBDataSource,
+    private CustomerConfigsDBDataSource: MongoDataSource.CustomerConfigsDBDataSource
   ) { }
+
+  public async getCustomerConfigs(customerId: string): Promise<CustomerConfigsEntity | null> {
+    const configs = await this.CustomerConfigsDBDataSource.getByCustomerId(customerId);
+    return configs || null
+  }
+
+  public async setCustomerConfigs(customerId: string, configs: CustomerConfigsInput): Promise<CustomerConfigsEntity> {
+    const customerConfigs = await this.getCustomerConfigs(customerId);
+    if (!customerConfigs)
+      return await this.CustomerConfigsDBDataSource.create({
+        customerId,
+        ...configs
+      } as CustomerConfigsEntity);
+    else return await this.CustomerConfigsDBDataSource.update(
+      customerConfigs.toObject()._id,
+      configs as CustomerConfigsEntity
+    );
+  }
 
   public async getById(customerId: string): Promise<CustomerEntity> {
     const customer = await this.CustomerDBDataSource.get(customerId);

@@ -113,7 +113,6 @@ export class FastingGraphQLResolver {
     @Arg('customerId') customerId: string,
   ): Promise<Fasting[]> {
     const last = await this.FastingsRepository.getLast(customerId)
-    console.log(last)
     return last
   }
 }

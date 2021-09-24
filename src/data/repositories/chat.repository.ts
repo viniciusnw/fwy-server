@@ -9,22 +9,25 @@ import { Pagination } from 'resolvers/General/types/pagination.input'
 export class ChatRepository {
 
   private CustomerChatDBDataSource: MongoDataSource.CustomerChatDBDataSource
-
+  private LoadCustomerChatDB(customerId: string) {
+    this.CustomerChatDBDataSource = new MongoDataSource.CustomerChatDBDataSource(customerId);
+  }
+  
   constructor(
     private WSService: WSService
   ) { }
 
-  private LoadCustomerChatDB(customerId: string){
-    this.CustomerChatDBDataSource = new MongoDataSource.CustomerChatDBDataSource(customerId);
-  }
-
-  public async sendMessage(customerId: string, text: string, sender: string): Promise<any> {
-    this.LoadCustomerChatDB(customerId);
+  public async sendMessage(comunicationIds: {
+    clientId: string
+    customerId?: string
+  }, text: string, sender: string): Promise<any> {
+    this.LoadCustomerChatDB(comunicationIds.customerId || comunicationIds.clientId);
     const message = { sender, text, date: new Date() };
     const saveMessage = await this.CustomerChatDBDataSource.create(message as CustomerMessageEntity);
     if (saveMessage && !saveMessage.errors) {
       const wsMessage = { type: 'NEW_MESSAGE', id: saveMessage._id, ...message };
-      this.WSService.clientMessage(customerId, wsMessage);
+      this.WSService.clientMessage(comunicationIds.clientId, wsMessage);
+      if (comunicationIds?.customerId) this.WSService.clientMessage(comunicationIds.customerId, wsMessage);
     }
     else return false;
     return true;

@@ -4,3 +4,4 @@ export * from './customer-chat.db-datasource';
 export * from './customer-admin.db-datasource';
 export * from './customer-fastings.db-datasource';
 export * from './customer-preset-fastings.db-datasource';
+export * from './customer-configs.db-datasource';
