@@ -2,13 +2,14 @@ import { Service } from "typedi";
 import { encrypt, decrypt } from "core/services";
 import { MongoDataSource } from "data/datasource";
 
-// INPUT TYPES
+// INPUT/OBJ TYPES
 import { Pagination } from 'resolvers/General/types/pagination.input'
 import { CustomerConfigsInput } from 'resolvers/Customer/types/customer-configs.input'
 import { CustomerEntity, AvatarEntity, CustomerAdminEntity, CustomerConfigsEntity } from "data/datasource/mongo/models";
 import { CustomerRegisterInput } from "resolvers/Customer/types/customer-register.input";
 import { CustomerUpdateInput } from "resolvers/Customer/types/customer-update.input";
 import { Avatar } from "resolvers/Customer/types/customer.object-type";
+import { Token } from 'resolvers/General/types/token.object-type'
 
 type CreateLoginModel = {
   email: string;
@@ -52,14 +53,30 @@ export class CustomerRepository {
     return customer
   }
 
-  public async listCustomers(pagination: Pagination): Promise<CustomerEntity[]> {
+  private async listCustomers(pagination: Pagination): Promise<CustomerEntity[]> {
     const { pageNumber, nPerPage } = pagination;
     return await this.CustomerDBDataSource.listPaginated(pageNumber, nPerPage);
   }
 
-  public async search(term: string, pagination: Pagination): Promise<CustomerEntity[]> {
+  private async search(term: string, pagination: Pagination): Promise<CustomerEntity[]> {
     const { pageNumber, nPerPage } = pagination;
     return await this.CustomerDBDataSource.search(term, pageNumber, nPerPage);
+  }
+
+  public async listOrSearchCustomers(token: Token, term: string, pagination: Pagination): Promise<CustomerEntity[]> {
+    let listCustomers: Array<CustomerEntity>
+
+    if (token.client.email === 'apple@review.com') {
+      listCustomers = await this.search(token.client.email, pagination);
+    }
+    else {
+      if (term) listCustomers = await this.search(term, pagination);
+      else listCustomers = await this.listCustomers(pagination);
+      let filteredCustomers = listCustomers.filter(customer => customer.email != token.client.email)
+      return filteredCustomers
+    }
+
+    return listCustomers
   }
 
   public async createAdmin(email: string): Promise<boolean> {
