@@ -146,7 +146,7 @@ export class CustomerGraphQLResolver {
     } as NextPagination;
 
     const customers = listCustomers.map(customer => ({
-      ...customer.toObject(),
+      ...customer,
       configs: null,
       avatar: this.CustomerRepository.createAvatarObjectType(customer)
     }))
