@@ -2,7 +2,7 @@ import { Token } from './General/types/token.object-type'
 
 export class GraphQLContext {
   ip?: string;
-  token: Omit<Token, 'avatar'>;
+  token: Token;
   request: any;
   dataLoaderInitialized?: boolean;
 }

@@ -137,9 +137,7 @@ export class CustomerGraphQLResolver {
     @Arg('term', { nullable: true }) term: string,
   ): Promise<CustomerList> {
 
-    let listCustomers: Array<CustomerEntity>
-    if (term) listCustomers = await this.CustomerRepository.search(term, pagination);
-    else listCustomers = await this.CustomerRepository.listCustomers(pagination);
+    const listCustomers = await this.CustomerRepository.listOrSearchCustomers(context.token, term, pagination)
 
     const hasNextPage = listCustomers.length == pagination.nPerPage;
     const nextPagination = {
@@ -147,16 +145,14 @@ export class CustomerGraphQLResolver {
       nextPageNumber: hasNextPage ? pagination.pageNumber + 1 : null
     } as NextPagination;
 
-    const customers: Array<Customer> = listCustomers.map(customer => ({
+    const customers = listCustomers.map(customer => ({
       ...customer.toObject(),
       configs: null,
       avatar: this.CustomerRepository.createAvatarObjectType(customer)
     }))
 
-    const filteredCustomers = customers.filter(customer => customer.email != context.token.client.email)
-
     return {
-      customers: filteredCustomers,
+      customers,
       nextPagination
     } as CustomerList
   }
