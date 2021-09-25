@@ -36,10 +36,15 @@ export class CustomerRepository {
         customerId,
         ...configs
       } as CustomerConfigsEntity);
-    else return await this.CustomerConfigsDBDataSource.update(
-      customerConfigs.toObject()._id,
-      configs as CustomerConfigsEntity
-    );
+    else {
+      const update = await this.CustomerConfigsDBDataSource.update(
+        customerConfigs.toObject()._id,
+        configs as CustomerConfigsEntity
+      );
+      const { ok } = update;
+      if (!ok) throw Error("update configs error");
+      return await this.getCustomerConfigs(customerId);
+    }
   }
 
   public async getById(customerId: string): Promise<CustomerEntity> {

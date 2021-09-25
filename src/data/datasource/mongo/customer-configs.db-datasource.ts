@@ -18,7 +18,7 @@ export class CustomerConfigsDBDataSource extends DBDataSource<CustomerConfigsEnt
   }
 
   @ThrowsWhenUncaughtException(DataSourceError)
-  update(id: string, entity: CustomerConfigsEntity): Promise<any> {
-    return this.model.updateOne({ _id: id }, entity).exec();
+  async update(id: string, entity: CustomerConfigsEntity): Promise<any> {
+    return await this.model.updateOne({ _id: id }, entity).exec();
   }
 }

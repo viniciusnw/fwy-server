@@ -69,9 +69,10 @@ export class CustomerDBDataSource extends DBDataSource<CustomerEntity> {
           }]
         }
       )
-      .collation({ locale: 'en', strength: 3 })
+      .limit(nPerPage)
       .sort({ _id: -1 })
+      .collation({ locale: 'en', strength: 3 })
       .skip(pageNumber > 0 ? ((pageNumber - 1) * nPerPage) : 0)
-      .limit(nPerPage).exec()
+      .exec()
   }
 }
