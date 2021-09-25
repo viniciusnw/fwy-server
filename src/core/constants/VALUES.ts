@@ -23,4 +23,4 @@ export const DAYS  = [
   'Sábado'
 ]
 
-export const appleEmail = 'apple@review.com'
+export const appleEmail = 'Apple@review.com'

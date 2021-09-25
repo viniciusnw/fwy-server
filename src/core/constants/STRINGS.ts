@@ -1,5 +1,5 @@
 export const STRINGS = {
-    errors: {
-        notFound: 'Não encontrado'
-    }
+  errors: {
+    notFound: 'Não encontrado'
+  }
 }
