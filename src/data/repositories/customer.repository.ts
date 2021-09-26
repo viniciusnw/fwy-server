@@ -67,14 +67,19 @@ export class CustomerRepository {
   public async listOrSearchCustomers(token: Token, term: string, pagination: Pagination): Promise<CustomerEntity[]> {
     let listCustomers: Array<CustomerEntity> = []
 
-    if (token.client.email.toLocaleLowerCase() == appleEmail.toLocaleLowerCase()) {
+    if (token.client.email == appleEmail) {
       listCustomers = [await this.getById(token.client._id)];
     }
     else {
       if (term) listCustomers = await this.search(term, pagination);
       else listCustomers = await this.listCustomers(pagination);
-      let filteredCustomers = listCustomers.filter(customer => customer.email != token.client.email)
-      return filteredCustomers.map(customer => customer.toObject())
+
+      let filteredCustomers = listCustomers.filter(customer =>
+        customer.email != token.client.email ||
+        customer.email != appleEmail
+      ).map(customer => customer.toObject());
+
+      return filteredCustomers
     }
 
     return listCustomers
