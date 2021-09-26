@@ -75,7 +75,7 @@ export class CustomerRepository {
       else listCustomers = await this.listCustomers(pagination);
 
       let filteredCustomers = listCustomers.filter(customer =>
-        customer.email != token.client.email &&
+        customer.email != token.client.email ||
         customer.email != appleEmail
       ).map(customer => customer.toObject());
 
