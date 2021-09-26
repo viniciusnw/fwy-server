@@ -1,5 +1,6 @@
 import { Service } from "typedi";
 import { encrypt, decrypt } from "core/services";
+import { appleEmail } from "core/constants";
 import { MongoDataSource } from "data/datasource";
 
 // INPUT/OBJ TYPES
@@ -64,16 +65,16 @@ export class CustomerRepository {
   }
 
   public async listOrSearchCustomers(token: Token, term: string, pagination: Pagination): Promise<CustomerEntity[]> {
-    let listCustomers: Array<CustomerEntity>
+    let listCustomers: Array<CustomerEntity> = []
 
-    if (token.client.email === 'apple@review.com') {
-      listCustomers = await this.search(token.client.email, pagination);
+    if (token.client.email.toLocaleLowerCase() == appleEmail.toLocaleLowerCase()) {
+      listCustomers = [await this.getById(token.client._id)];
     }
     else {
       if (term) listCustomers = await this.search(term, pagination);
       else listCustomers = await this.listCustomers(pagination);
       let filteredCustomers = listCustomers.filter(customer => customer.email != token.client.email)
-      return filteredCustomers
+      return filteredCustomers.map(customer => customer.toObject())
     }
 
     return listCustomers
