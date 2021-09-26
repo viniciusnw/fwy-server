@@ -76,7 +76,6 @@ export class CustomerRepository {
 
       let filteredCustomers = listCustomers
         .filter(customer => customer.email != token.client.email)
-        // .filter(customer => customer.email != appleEmail)
         .map(customer => customer.toObject());
 
       return filteredCustomers
