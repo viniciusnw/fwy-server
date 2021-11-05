@@ -1,1 +1,1 @@
-export * from './rest.http.builder';
+export * from './payPal.http.builder';
