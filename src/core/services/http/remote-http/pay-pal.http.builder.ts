@@ -6,18 +6,18 @@ import { HttpServiceBuilder } from '../http.config';
 export class PayPalApiBuilder extends HttpServiceBuilder {
 
   constructor(
-    @Inject(ENV_NAMES.REST_API) private REST_API,
+    @Inject(ENV_NAMES.PAY_PAL) private PAY_PAL,
   ) {
     super(
-      REST_API.URL,
+      PAY_PAL.URL,
       { 'Content-Type': 'application/json' },
       30000,
     );
   }
 
-  // clone(): PayPal {
-  //   return new PayPal(
-  //     this.REST_API.URL,
-  //   );
-  // }
+  clone(): PayPalApiBuilder {
+    return new PayPalApiBuilder(
+      this.PAY_PAL.URL,
+    );
+  }
 }

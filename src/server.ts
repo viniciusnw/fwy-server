@@ -51,7 +51,7 @@ export default class Server implements RunnerType {
 
     const {
       JWT,
-      REST_API,
+      PAY_PAL,
       USE_CACHE,
       DATABASE_URL,
       MEMCACHEDCLOUD,
@@ -66,12 +66,12 @@ export default class Server implements RunnerType {
     // MONGO
     Container.set(DATABASE_URL, process.env.DATABASE_URL);
 
-    // REST
-    Container.set(REST_API, {
-      URL: process.env.MICROSERVICES_URL,
-      EXPIRES_IN: process.env.MICROSERVICES_EXPIRES_IN,
-      CLIENT_SECRET: process.env.MICROSERVICES_CLIENT_SECRET,
-      CLIENT_ID: process.env.MICROSERVICES_CLIENT_ID,
+    // PAYPAL
+    Container.set(PAY_PAL, {
+      URL: process.env.PAY_PAL_URL,
+      EXPIRES_IN: process.env.PAY_PAL_EXPIRES_IN,
+      CLIENT_SECRET: process.env.PAY_PAL_CLIENT_SECRET,
+      CLIENT_ID: process.env.PAY_PAL_CLIENT_ID,
     });
 
     // JWT
