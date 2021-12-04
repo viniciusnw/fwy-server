@@ -15,9 +15,9 @@ export class PayPalApiBuilder extends HttpServiceBuilder {
     );
   }
 
-  clone(): PayPalApiBuilder {
-    return new PayPalApiBuilder(
-      this.PAY_PAL.URL,
-    );
-  }
+  // clone(): PayPalApiBuilder {
+  //   return new PayPalApiBuilder(
+  //     this.PAY_PAL.URL,
+  //   );
+  // }
 }

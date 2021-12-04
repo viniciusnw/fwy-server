@@ -31,7 +31,7 @@ export class PayPalHttpDataSource {
 
   @Cached()
   @ThrowsWhenUncaughtException(DataSourceError)
-  async auth2(@CacheKey() { clientId, clientSecret }): Promise<any> {
+  async auth2Exemplo(@CacheKey() { clientId, clientSecret }): Promise<any> {
     return this.PayPalApiBuilder
       .post('/customers/oauth2/token')
       .params({

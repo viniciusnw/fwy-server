@@ -69,7 +69,6 @@ export default class Server implements RunnerType {
     // PAYPAL
     Container.set(PAY_PAL, {
       URL: process.env.PAY_PAL_URL,
-      EXPIRES_IN: process.env.PAY_PAL_EXPIRES_IN,
       CLIENT_SECRET: process.env.PAY_PAL_CLIENT_SECRET,
       CLIENT_ID: process.env.PAY_PAL_CLIENT_ID,
     });
