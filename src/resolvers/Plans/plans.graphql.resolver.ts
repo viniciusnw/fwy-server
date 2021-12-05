@@ -21,7 +21,7 @@ export class PlansGraphQLResolver {
   async plans(
     @Ctx() context: GraphQLContext,
   ): Promise<ListPlans> {
-    const plans = await this.PlansRepository.list();
+    const plans = await this.PlansRepository.listPlans();
     return plans;
   }
 }

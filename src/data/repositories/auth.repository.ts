@@ -1,5 +1,5 @@
 import { Service } from "typedi";
-import { ProvidersDataSource, HttpDataSource } from 'data/datasource';
+import { ProvidersDataSource } from 'data/datasource';
 import { JwtService, encrypt, decrypt } from "core/services";
 import { CustomerEntity } from "data/datasource/mongo/models";
 
@@ -7,7 +7,6 @@ import { CustomerEntity } from "data/datasource/mongo/models";
 export class AuthRepository {
   constructor(
     private jwtService: JwtService,
-    private PayPalHttpDataSource: HttpDataSource.PayPalHttpDataSource,
     private PayPalAuthSessionProviderDataSource: ProvidersDataSource.PayPalAuthSessionProviderDataSource,
   ) { }
 
@@ -28,20 +27,6 @@ export class AuthRepository {
   }
 
   public async getPayPalToken(): Promise<string> {
-    if (this.PayPalAuthSessionProviderDataSource.access_token) {
-      
-      if (this.PayPalAuthSessionProviderDataSource.expirationDate >= new Date())
-        return this.PayPalAuthSessionProviderDataSource.access_token
-
-      else {
-        const payPalAuth = await this.PayPalHttpDataSource.auth();
-        this.PayPalAuthSessionProviderDataSource.setToken(payPalAuth)
-        return payPalAuth.access_token;
-      }
-    }
-
-    const payPalAuth = await this.PayPalHttpDataSource.auth();
-    this.PayPalAuthSessionProviderDataSource.setToken(payPalAuth)
-    return payPalAuth.access_token;
+    return this.PayPalAuthSessionProviderDataSource.getToken();
   }
 }
