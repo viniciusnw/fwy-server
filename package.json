@@ -63,16 +63,15 @@
   "scripts": {
     "====": "===PROD",
     "start": "yarn run server",
-    "server": "nodemon --delay 80ms --exec 'node --inspect=0.0.0.0:56745' -r ts-node/register src/index.ts server",
+    "server": "node -r ts-node/register src/index.ts server",
     "===": "===DEV",
-    "start:dev": "yarn dockerdown && yarn dockerup",
+    "start:dev": "yarn run server:dev",
+    "server:dev": "nodemon --legacy-watch --exec 'node --inspect=0.0.0.0:56745' -r ts-node/register src/index.ts server",
+    "server:up": "yarn dockerdown && yarn dockerup",
     "dockerup": "docker-compose --file docker-compose.dev.yml up --build --force-recreate",
     "dockerdown": "docker-compose --file docker-compose.dev.yml down && docker-compose --file docker-compose.dev.yml stop",
-    "server:debug": "nodemon --no-deprecation -r ts-node/register src/index.ts server",
     "=====": "===WORKERS/JOBS",
     "exec": "node -r ts-node/register src/index.ts",
-    "worker:create-admin": "yarn run exec -- worker:create-admin",
-    "job:database-migration": "yarn run exec -- job:database-migration",
-    "worker:database-migration:param": "yarn run exec -- worker:database-migration param"
+    "worker:create-admin": "yarn run exec -- worker:create-admin"
   }
 }

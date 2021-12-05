@@ -4,7 +4,7 @@ import { DataSourceError } from 'core/errors'
 import { ThrowsWhenUncaughtException, Cached, CacheKey } from 'core/middlewares'
 import { ENV_NAMES } from 'core/constants';
 import { PayPalApiBuilder } from 'core/services/http';
-import { auth } from './models/pay-pal.model';
+import { Auth, ListPlans, Plan } from './models/pay-pal.model';
 
 @Service()
 export class PayPalHttpDataSource {
@@ -15,13 +15,11 @@ export class PayPalHttpDataSource {
   ) { }
 
   @ThrowsWhenUncaughtException(DataSourceError)
-  async auth(): Promise<auth> {
+  async auth(): Promise<Auth> {
     const { CLIENT_SECRET, CLIENT_ID } = this.envPaypal;
     return this.PayPalApiBuilder
       .post('/v1/oauth2/token')
-      .headers({
-        "Authorization": "Basic " + btoa(CLIENT_ID + ":" + CLIENT_SECRET)
-      })
+      .auth(CLIENT_ID, CLIENT_SECRET)
       .params({
         grant_type: 'client_credentials',
       })
@@ -31,14 +29,37 @@ export class PayPalHttpDataSource {
 
   @Cached()
   @ThrowsWhenUncaughtException(DataSourceError)
-  async auth2Exemplo(@CacheKey() { clientId, clientSecret }): Promise<any> {
+  async listPlans(
+    authorization: string,
+    @CacheKey() params?: {
+      page: number,
+      page_size: number,
+      total_required: boolean
+    },
+  ): Promise<ListPlans> {
     return this.PayPalApiBuilder
-      .post('/customers/oauth2/token')
+      .get('/v1/billing/plans')
+      .bearerAuthorization(authorization)
       .params({
-        grant_type: 'client_credentials',
-        client_id: clientId,
-        client_secret: clientSecret,
+        page: params?.page ? params.page : 1,
+        page_size: params?.page_size ? params.page_size : 3,
+        total_required: params?.total_required ? params.total_required : true
       })
+      .build()
+      .execute()
+  }
+
+  @Cached()
+  @ThrowsWhenUncaughtException(DataSourceError)
+  async getPlan(
+    authorization: string,
+    @CacheKey() params: {
+      planId: string
+    }
+  ): Promise<Plan> {
+    return this.PayPalApiBuilder
+      .get(`/v1/billing/plans/${params.planId}`)
+      .bearerAuthorization(authorization)
       .build()
       .execute()
   }

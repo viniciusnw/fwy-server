@@ -72,8 +72,10 @@ export default class CreateAdmin implements RunnerType {
     });
   }
 
-  public async run(param: string): Promise<any> {
-    await Container.get(CustomerRepository).createAdmin(param)
-    console.info(`E-mail ${param} was associated as an administrator`);
+  public async run(email: string): Promise<any> {
+    if (!email) return console.info(`empty E-mail`);
+
+    await Container.get(CustomerRepository).createAdmin(email)
+    console.info(`E-mail ${email} was associated as an administrator`);
   }
 }

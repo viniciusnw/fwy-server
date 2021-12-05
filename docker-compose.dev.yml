@@ -44,7 +44,7 @@ services:
       - memcached
     networks:
       - server-network
-    command: yarn start
+    command: yarn start:dev
     # command: yarn worker:create-admin viniciusnw@hotmail.com.br
 
 networks:

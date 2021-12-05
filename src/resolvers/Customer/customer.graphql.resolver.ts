@@ -48,7 +48,7 @@ export class CustomerGraphQLResolver {
 
     const createdCustomer = await this.CustomerRepository.create(customerInput);
     const login = { email: customerInput.email, password: customerInput.password };
-    const retoken = await this.AuthRepository.createReToken(login);
+    const retoken = await this.AuthRepository.createCustomerReToken(login);
     const token = await this.AuthRepository.createCustomerToken(createdCustomer, retoken);
 
     const avatar = this.CustomerRepository.createAvatarObjectType(createdCustomer)
@@ -77,7 +77,7 @@ export class CustomerGraphQLResolver {
   ): Promise<CustomerLogin> {
 
     const customer = await this.CustomerRepository.login(email, password, isAdmin)
-    const retoken = await this.AuthRepository.createReToken({ email, password });
+    const retoken = await this.AuthRepository.createCustomerReToken({ email, password });
     const token = await this.AuthRepository.createCustomerToken(customer, retoken);
 
     const avatar = this.CustomerRepository.createAvatarObjectType(customer)
@@ -108,7 +108,7 @@ export class CustomerGraphQLResolver {
     const { token: { client: { _id } } } = context
     const customer = await this.CustomerRepository.update(_id, customerInput)
     const login = this.CustomerRepository.createLoginModel(customer);
-    const retoken = await this.AuthRepository.createReToken(login);
+    const retoken = await this.AuthRepository.createCustomerReToken(login);
     const token = await this.AuthRepository.createCustomerToken(customer, retoken);
 
     const avatar = this.CustomerRepository.createAvatarObjectType(customer)

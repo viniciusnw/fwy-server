@@ -50,8 +50,8 @@ export class HttpServiceBuilder {
     );
   }
 
-  authorization(value: string): HttpServiceBuilder {
-    this.requestConfig.headers['Authorization'] = value;
+  bearerAuthorization(value: string): HttpServiceBuilder {
+    this.requestConfig.headers['Authorization'] = `Bearer ${value}`;
     return this;
   }
 
