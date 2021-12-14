@@ -134,4 +134,40 @@ export class PayPalHttpDataSource {
       .build()
       .execute()
   }
+
+  @ThrowsWhenUncaughtException(DataSourceError)
+  async cancelSubscription(
+    authorization: string,
+    params: {
+      subsId: string,
+      reason?: string
+    }
+  ): Promise<any> {
+    return this.PayPalApiBuilder
+      .post(`/v1/billing/subscriptions/${params.subsId}/cancel`)
+      .data({
+        reason: params.reason ? params.reason : "Cancel the subscription"
+      })
+      .bearerAuthorization(authorization)
+      .build()
+      .execute()
+  }
+
+  @ThrowsWhenUncaughtException(DataSourceError)
+  async suspendSubscription(
+    authorization: string,
+    params: {
+      subsId: string,
+      reason?: string
+    }
+  ): Promise<any> {
+    return this.PayPalApiBuilder
+      .post(`/v1/billing/subscriptions/${params.subsId}/suspend`)
+      .data({
+        reason: params.reason ? params.reason : "Suspend the subscription"
+      })
+      .bearerAuthorization(authorization)
+      .build()
+      .execute()
+  }
 }
