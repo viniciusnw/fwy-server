@@ -7,17 +7,9 @@ export type Auth = {
   nonce: string
 }
 
-enum ListPlans_status {
-  CREATED,
-  INACTIVE,
-  ACTIVE,
-}
-
 export type Plan = {
   id: string,
   name: string,
-  
-  // ListPlans_status
   status: string,
   description: string,
   usage_type: string,
