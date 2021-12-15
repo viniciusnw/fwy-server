@@ -26,7 +26,7 @@ export class PlansRepository {
   }
 
   public async getSubscription(): Promise<any> {
-
+    
   }
 
   public async subscribeCustomer(): Promise<any> {

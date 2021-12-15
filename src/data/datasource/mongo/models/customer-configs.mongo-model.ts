@@ -2,7 +2,7 @@ import { Document, model, Schema } from 'mongoose';
 import { OptionalBoolean, OptionalString } from 'core/types';
 
 export interface CustomerConfigsEntity extends Document {
-  customerId?: string;
+  customerId: string;
   chat?: boolean;
   height?: string;
   weight?: string;
