@@ -28,3 +28,4 @@ sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
 
 # Free SSL
 https://letsencrypt.org/pt-br/getting-started/
+https://www.digitalocean.com/community/tutorials/how-to-secure-a-containerized-node-js-application-with-nginx-let-s-encrypt-and-docker-compose-pt
