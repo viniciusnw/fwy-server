@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./certs/certbot-etc:/etc/letsencrypt
+      - ./certs/certbot-var:/var/lib/letsencrypt
+    command: certonly -v --standalone --email fastingwithyara@hotmail.com --agree-tos --no-eff-email --staging -d dominio.com -d www.dominio.com
+    # command: certonly --standalone -d fastingwithyara.com --staple-ocsp -m fastingwithyara@hotmail.com --agree-tos
+

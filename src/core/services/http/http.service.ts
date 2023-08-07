@@ -1,39 +1,79 @@
+import { Inject, Container } from 'typedi';
+import { ENV_NAMES } from 'core/constants';
 import { AxiosInstance, AxiosRequestConfig } from 'axios';
-
-export class HttpService {
+const util = require('util');
+class httpService {
 
   constructor(
     protected httpClient: AxiosInstance,
     protected requestConfig: AxiosRequestConfig,
+    protected DEV: Boolean,
   ) { }
 
   async execute(): Promise<any> {
-    return this.httpClient.request(this.requestConfig).then(dt => this.onSuccess(dt))
+    return this.httpClient.request(this.requestConfig).then(response => this.onSuccess(response))
   }
 
-  onSuccess(dt){
-    this.HTTP_LOG({dt})
-    return dt
+  onSuccess(response) {
+    if (this.DEV) this.HTTP_LOG({ response })
+    return response;
   }
 
   onError(err) {
-    this.HTTP_LOG({err})
+    if (this.DEV) this.HTTP_LOG({ err })
     throw err;
   }
 
-  HTTP_LOG({dt = null, err = null}){
-    const { baseURL, url, params, method } = this.requestConfig
-    
-    if(dt){
-      const { data } = dt
-      console.log(`[HTTP][SUCCESS][${method.toLocaleUpperCase()}][${baseURL + url}][${params ? JSON.stringify(params) : ''}]: ${JSON.stringify(data)}`)
-    }
-    if(err){
-      const { config, response, message } = err
-      if (!config || !response) return console.log(`[HTTP][ERROR][${method.toLocaleUpperCase()}][${baseURL + url}][${params ? JSON.stringify(params) : ''}]:`, message)
+  HTTP_LOG({ response = null, err = null }) {
+    const { baseURL, url, params, method, headers, auth } = this.requestConfig
 
+    if (response) {
       const { data } = response
-      console.log(`[HTTP][ERROR][${method.toLocaleUpperCase()}][${baseURL + url}][${params ? JSON.stringify(params) : ''}]: ${JSON.stringify(data)}`)
+      console.log(`[HTTP][SUCCESS]:`, util.inspect(
+        {
+          method: method.toLocaleUpperCase(),
+          headers,
+          auth,
+          url: baseURL + url,
+          params,
+          data
+        },
+        false, null, true)
+      );
+    }
+    if (err) {
+      const { response = { data: '' }, message } = err
+      const { data } = response;
+      console.log(`[HTTP][ERROR]:`, util.inspect(
+        {
+          method: method.toLocaleUpperCase(),
+          headers,
+          auth,
+          url: baseURL + url,
+          params,
+          data,
+          message
+        },
+        false, null, true)
+      );
+    }
+  }
+}
+
+export class HttpService extends httpService {
+  constructor(
+    httpClient: AxiosInstance,
+    requestConfig: AxiosRequestConfig
+  ) {
+    super(httpClient, requestConfig, Container.get(ENV_NAMES.DEV))
+  }
+
+  async execute(): Promise<any> {
+    try {
+      const response = await super.execute();
+      return response.data;
+    } catch (error) {
+      this.onError(error);
     }
   }
 }

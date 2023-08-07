@@ -1,7 +1,7 @@
 import axios, { AxiosProxyConfig } from 'axios';
 import { AxiosInstance, AxiosRequestConfig } from 'axios';
 import { forEach, merge } from 'lodash';
-import { HttpService } from '.';
+import { HttpService } from './http.service';
 
 const USE_OUTBOUND_PROXY = process.env.USE_OUTBOUND_PROXY === 'true';
 const OUTBOUND_PROXY_HOST = process.env.OUTBOUND_PROXY_HOST;
@@ -19,16 +19,14 @@ export interface HttpServiceBuilder {
 }
 
 export class HttpServiceBuilder {
-
   protected httpClient: AxiosInstance;
   protected requestConfig: AxiosRequestConfig;
 
   constructor(
-    baseURL: string,
+    public baseURL: string,
     headers?: Object,
     timeout?: number
   ) {
-
     timeout = timeout || 120000;
     headers = headers || {};
     let proxy: AxiosProxyConfig;
@@ -47,11 +45,13 @@ export class HttpServiceBuilder {
   }
 
   clone(): HttpServiceBuilder {
-    throw new Error();
+    return new HttpServiceBuilder(
+      this.baseURL,
+    );
   }
 
-  authorization(token: string): HttpServiceBuilder {
-    this.requestConfig.headers['Authorization'] = token;
+  bearerAuthorization(value: string): HttpServiceBuilder {
+    this.requestConfig.headers['Authorization'] = `Bearer ${value}`;
     return this;
   }
 
@@ -62,11 +62,6 @@ export class HttpServiceBuilder {
 
   data(data: any): HttpServiceBuilder {
     this.requestConfig.data = data;
-    return this;
-  }
-
-  baseUrl(data: any): HttpServiceBuilder {
-    this.requestConfig.baseURL = data;
     return this;
   }
 
