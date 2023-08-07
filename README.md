@@ -1,34 +1,9 @@
-# Digital Ocean / Server
-> install node/npm/yarn
+# Stack
 ```
-$ sudo apt update
-$ sudo apt install nodejs
-$ sudo apt install npm
-$ sudo npm install -g yarn
+Node, Mongo, Memcached, WebSocket, TypeScript, Docker, Nginx, SSL, LetsEncrypt, DigitalOcean
 ```
 
-# After runs deploy / on Server
-
-> connect to ssh
+# Install and Run
 ```
-$ ssh -tt $SSH_URL
+$ docker-compose -f docker-compose.dev.yml up -d --build
 ```
-
-> check service node log
-```
-$ docker logs -f node
-$ docker-compose logs -t -f --tail
-```
-
-# BackUp Mongo
-> save and restore
-> https://docs.mongodb.com/manual/tutorial/backup-and-restore-tools/
-```
-$ mongodump -d old_db_name -o mongodump/
-$ mongorestore -d new_db_name mongodump/old_db_name
-```
-
-# Mongo Config
-> https://docs.mongodb.com/manual/reference/program/mongo/
-> https://docs.mongodb.com/manual/reference/mongo-shell/
-> https://docs.mongodb.com/manual/mongo/#start-the-mongo-shell-and-connect-to-mongodb
